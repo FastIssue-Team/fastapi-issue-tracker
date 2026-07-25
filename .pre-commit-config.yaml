@@ -21,10 +21,8 @@ repos:
     rev: bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # frozen: v1.48.0
     hooks:
       - id: typos
-        args: 
-          - --force-exclude
-          - --config
-          - _typos.toml
+        args: [--force-exclude]
+        exclude: ^(THIRD_PARTY_NOTICES\.md|licenses/issue-tracker-MIT\.txt)$
   - repo: local
     hooks:
       - id: local-biome-check
