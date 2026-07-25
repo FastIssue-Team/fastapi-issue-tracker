@@ -24,4 +24,3 @@ MIT License
 
 The original copyright and license notice from the upstream repository
 is preserved in this project.
-
