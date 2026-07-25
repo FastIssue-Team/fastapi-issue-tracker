@@ -94,6 +94,7 @@ jobs:
     needs:
       - test-playwright
       - changes
+    continue-on-error: true
     # Merge reports after playwright-tests, even if some shards have failed
     if: ${{ !cancelled() && needs.changes.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
