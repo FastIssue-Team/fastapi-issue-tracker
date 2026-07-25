@@ -316,7 +316,7 @@ The current Github Actions workflows expect these secrets:
 
 There are GitHub Action workflows in the `.github/workflows` directory already configured for deploying to the environments (GitHub Actions runners with the labels):
 
-* `staging`: after pushing (or merging) to the branch `master`.
+* `staging`: after pushing (or merging) to the branch `main`.
 * `production`: after publishing a release.
 
 Both workflows are associated with their respective GitHub Environments, so deployments will be visible in the repository's **Environments** section and will respect any protection rules you configure.
