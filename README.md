@@ -6,6 +6,7 @@
 [![Project Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)](#project-status)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Live Demo](https://img.shields.io/badge/demo-live-blueviolet?logo=railway&logoColor=white)](https://frontend-production-3125.up.railway.app)
 
 Easy Tracker is a full-stack issue and task management application designed to make team collaboration simple, transparent, and efficient. It combines the practical workflow of a lightweight issue tracker with the architecture and developer experience of the official Full Stack FastAPI Template.
 
