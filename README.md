@@ -3,30 +3,28 @@
 > A modern, open-source issue tracker for individuals and small teams, built with FastAPI and React.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Project Status](https://img.shields.io/badge/status-in%20development-orange.svg)](#project-status)
+[![Project Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)](#project-status)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
 
 Easy Tracker is a full-stack issue and task management application designed to make team collaboration simple, transparent, and efficient. It combines the practical workflow of a lightweight issue tracker with the architecture and developer experience of the official Full Stack FastAPI Template.
 
-The project is being developed as a modern successor to a Flask-based issue tracker, with a FastAPI backend, a React frontend, typed APIs, role-aware collaboration, automated testing, and containerized deployment.
+The project is a modern successor to a Flask-based issue tracker, rebuilt with a FastAPI backend, a React frontend, typed APIs end-to-end, role-aware collaboration, automated testing, and containerized deployment.
 
 ## Project Status
-
-> [!IMPORTANT]
-> Easy Tracker is currently in the planning and initial development stage. The architecture, features, API paths, and setup commands below describe the intended direction and may change while the first usable release is being built.
 
 Current repository status:
 
 - [x] Project scope and technical direction defined
 - [x] Reference applications selected
-- [ ] Full-stack project scaffold
-- [ ] Authentication and user management
-- [ ] Issue management API
-- [ ] React user interface
-- [ ] Sharing, permissions, and comments
-- [ ] Automated tests and CI
-- [ ] First development release
+- [x] Full-stack project scaffold (FastAPI + React + PostgreSQL, Docker Compose)
+- [x] Authentication and user management
+- [x] Issue management API
+- [x] React user interface
+- [x] Sharing, permissions, and comments
+- [x] Automated tests (backend Pytest, end-to-end Playwright) and CI
+- [x] Deployed to Railway
+- [ ] Issue progress percentage / activity history (see [Roadmap](#roadmap))
 
 ## Why Easy Tracker?
 
@@ -39,7 +37,7 @@ Many issue trackers are either too limited for team collaboration or too complex
 - Fully typed from database models to frontend API calls
 - Extensible for future integrations and automation
 
-## Planned Features
+## Features
 
 ### Authentication and users
 
@@ -54,63 +52,63 @@ Many issue trackers are either too limited for team collaboration or too complex
 
 - Create, view, edit, and delete issues
 - Rich issue descriptions
-- Configurable status and priority
-- Assign issues to team members
-- Track issue owners and collaborators
+- Configurable status (`Open`, `In Progress`, `Done`) and priority (1–5)
+- Assign issues to team members, looked up by email
+- Track issue owners and assignees
 - Creation and update timestamps
-- Issue progress tracking
-- Search, filter, and sort issue lists
+- Filter the issue list by status, priority, and assignee
 
 ### Collaboration and permissions
 
-- Share issues with other users
-- Fine-grained permissions for shared issues
-- Control who may update status or assignee
-- Revoke shared access
+- Share issues with other users by email
+- Fine-grained permissions for shared issues (`can_edit_status`, `can_edit_assignee`)
+- Owner-only sharing and revocation
 - Add comments to issue discussions
 - Record comment authors and timestamps
 
 ### User experience
 
 - Responsive web interface
-- Dashboard and issue list views
+- Issue list with filters and an issue detail view
 - Clear status and priority indicators
-- Issue detail and activity views
+- Inline editing of status and assignee (permission-aware)
 - Light and dark themes
-- Accessible reusable UI components
-- Useful loading, empty, validation, and error states
+- Accessible, reusable UI components (shadcn/ui)
+- Loading, empty, validation, and error states
 
 ### Engineering and operations
 
-- Automatically generated frontend API client
-- Interactive OpenAPI documentation
-- Database migrations
-- Backend unit and integration tests
-- End-to-end browser tests
+- Automatically generated, fully typed frontend API client
+- Interactive OpenAPI documentation (Swagger UI and ReDoc)
+- Database migrations with Alembic
+- Backend unit and integration tests (Pytest)
+- End-to-end browser tests (Playwright)
 - Docker Compose for development and deployment
 - Continuous integration with GitHub Actions
-- Production-ready reverse proxy and HTTPS support
+- Production deployment on Railway, with Traefik/HTTPS support for self-hosting
 
 ## Technology Stack
 
 | Layer            | Technology                      |
-| ---------------- | ------------------------------- |
-| Backend API      | FastAPI, Python                 |
-| Validation       | Pydantic                        |
-| ORM              | SQLModel                        |
-| Database         | PostgreSQL                      |
-| Migrations       | Alembic                         |
-| Authentication   | JWT and secure password hashing |
-| Frontend         | React, TypeScript, Vite         |
-| UI               | Tailwind CSS, shadcn/ui         |
-| API client       | Generated from OpenAPI          |
-| Backend tests    | Pytest                          |
-| End-to-end tests | Playwright                      |
-| Containers       | Docker, Docker Compose          |
-| CI/CD            | GitHub Actions                  |
-| Reverse proxy    | Traefik                         |
+| ---------------- | -------------------------------- |
+| Backend API      | FastAPI, Python 3.14             |
+| Package manager  | uv (backend), bun (frontend)     |
+| Validation       | Pydantic                         |
+| ORM              | SQLModel                         |
+| Database         | PostgreSQL                       |
+| Migrations       | Alembic                          |
+| Authentication   | JWT and secure password hashing  |
+| Frontend         | React, TypeScript, Vite          |
+| UI               | Tailwind CSS, shadcn/ui          |
+| API client       | Generated from OpenAPI (hey-api) |
+| Backend tests    | Pytest                           |
+| End-to-end tests | Playwright                       |
+| Containers       | Docker, Docker Compose           |
+| CI/CD            | GitHub Actions                   |
+| Reverse proxy    | Traefik                          |
+| Hosting          | Railway                          |
 
-## Intended Architecture
+## Architecture
 
 ```text
 Browser
@@ -120,11 +118,11 @@ React + TypeScript frontend
    |
    | Generated typed API client
    v
-FastAPI REST API
+FastAPI REST API (/api/v1)
    |
    +-- Authentication and authorization
-   +-- Issue and comment services
-   +-- Sharing and permission rules
+   +-- Issue and comment routes
+   +-- Sharing and permission rules (app/core/permissions.py)
    |
    v
 SQLModel / Alembic
@@ -133,141 +131,179 @@ SQLModel / Alembic
 PostgreSQL
 ```
 
-The backend will expose a versioned REST API and remain responsible for authentication, authorization, validation, and business rules. The frontend will consume the generated OpenAPI client so request and response types stay synchronized with the API.
+The backend exposes a versioned REST API and is responsible for authentication, authorization, validation, and business rules. The frontend consumes the generated OpenAPI client so request and response types stay synchronized with the API. Access control (owner vs. shared vs. superuser) is centralized in `backend/app/core/permissions.py` and enforced on every issue, comment, and share route.
 
 ## Core Domain Model
 
 ### User
 
 | Field             | Description                               |
-| ----------------- | ----------------------------------------- |
-| `id`              | Unique user identifier                    |
-| `email`           | Unique sign-in address                    |
-| `username`        | Public user name                          |
-| `hashed_password` | Secure password hash                      |
-| `is_active`       | Whether the account is active             |
-| `is_superuser`    | Whether the user has administrator access |
+| ----------------- | ------------------------------------------ |
+| `id`              | Unique user identifier                     |
+| `email`           | Unique sign-in address                     |
+| `full_name`       | Optional display name                      |
+| `hashed_password` | Secure password hash                       |
+| `is_active`       | Whether the account is active              |
+| `is_superuser`    | Whether the user has administrator access  |
 
 ### Issue
 
-| Field         | Description                             |
-| ------------- | --------------------------------------- |
-| `id`          | Unique issue identifier                 |
-| `title`       | Short issue summary                     |
-| `description` | Detailed issue content                  |
-| `status`      | Current workflow state                  |
-| `priority`    | Relative urgency                        |
-| `progress`    | Completion percentage or progress state |
-| `owner_id`    | User who owns the issue                 |
-| `assignee_id` | User responsible for the issue          |
-| `created_at`  | Creation timestamp                      |
-| `updated_at`  | Last update timestamp                   |
+| Field         | Description                                     |
+| ------------- | ------------------------------------------------ |
+| `id`          | Unique issue identifier                          |
+| `title`       | Short issue summary                              |
+| `description` | Detailed issue content                           |
+| `status`      | Current workflow state (`Open`/`In Progress`/`Done`) |
+| `priority`    | Relative urgency, 1 (highest) to 5 (lowest)      |
+| `owner_id`    | User who owns the issue                          |
+| `assignee_id` | User responsible for the issue (nullable)        |
+| `created_at`  | Creation timestamp                               |
+| `updated_at`  | Last update timestamp                            |
 
 ### Comment
 
 | Field        | Description               |
-| ------------ | ------------------------- |
+| ------------ | -------------------------- |
 | `id`         | Unique comment identifier |
-| `issue_id`   | Related issue             |
-| `author_id`  | Comment author            |
-| `content`    | Comment body              |
-| `created_at` | Creation timestamp        |
+| `issue_id`   | Related issue              |
+| `author_id`  | Comment author             |
+| `content`    | Comment body                |
+| `created_at` | Creation timestamp          |
 
 ### IssueShare
 
-| Field               | Description                       |
-| ------------------- | --------------------------------- |
-| `id`                | Unique sharing record identifier  |
-| `issue_id`          | Shared issue                      |
-| `user_id`           | User receiving access             |
-| `can_edit_status`   | Permission to change issue status |
-| `can_edit_assignee` | Permission to change the assignee |
+| Field               | Description                        |
+| ------------------- | ------------------------------------ |
+| `id`                | Unique sharing record identifier    |
+| `issue_id`          | Shared issue                        |
+| `user_id`           | User receiving access               |
+| `can_edit_status`   | Permission to change issue status   |
+| `can_edit_assignee` | Permission to change the assignee   |
 
-The exact schema will be finalized during implementation and represented by database migrations.
+Deleting an issue cascades to its comments and shares; deleting a user cascades to issues they own and shares granted to them, while leaving issues they were merely assigned to intact (`assignee_id` is set to `NULL`). See the migrations in `backend/app/alembic/versions/` for the exact schema.
 
-## Planned API
+## API
 
-The final API will be documented automatically through OpenAPI. The initial resource design is expected to include:
+The full API is documented automatically through OpenAPI at `/docs` (Swagger UI) and `/redoc` (ReDoc). Key resources:
 
-| Method   | Path                                   | Purpose              |
-| -------- | -------------------------------------- | -------------------- |
-| `POST`   | `/api/v1/login/access-token`           | Authenticate a user  |
-| `GET`    | `/api/v1/users/me`                     | Get the current user |
-| `GET`    | `/api/v1/issues`                       | List visible issues  |
-| `POST`   | `/api/v1/issues`                       | Create an issue      |
-| `GET`    | `/api/v1/issues/{id}`                  | Get issue details    |
-| `PATCH`  | `/api/v1/issues/{id}`                  | Update an issue      |
-| `DELETE` | `/api/v1/issues/{id}`                  | Delete an issue      |
-| `GET`    | `/api/v1/issues/{id}/comments`         | List issue comments  |
-| `POST`   | `/api/v1/issues/{id}/comments`         | Add a comment        |
-| `POST`   | `/api/v1/issues/{id}/shares`           | Share an issue       |
-| `DELETE` | `/api/v1/issues/{id}/shares/{user_id}` | Revoke shared access |
+| Method   | Path                                   | Purpose                                             |
+| -------- | --------------------------------------- | ---------------------------------------------------- |
+| `POST`   | `/api/v1/login/access-token`           | Authenticate a user                                  |
+| `POST`   | `/api/v1/users/signup`                 | Register a new account                               |
+| `GET`    | `/api/v1/users/me`                     | Get the current user                                 |
+| `GET`    | `/api/v1/users/lookup?email=`          | Look up a user by email (for assign/share)           |
+| `GET`    | `/api/v1/issues`                       | List issues owned by or shared with the current user |
+| `POST`   | `/api/v1/issues`                       | Create an issue                                      |
+| `GET`    | `/api/v1/issues/{id}`                  | Get issue details plus the caller's permissions      |
+| `PUT`    | `/api/v1/issues/{id}`                  | Update an issue (permission-aware field restrictions)|
+| `DELETE` | `/api/v1/issues/{id}`                  | Delete an issue (owner or superuser only)            |
+| `GET`    | `/api/v1/issues/{id}/comments`         | List issue comments                                  |
+| `POST`   | `/api/v1/issues/{id}/comments`         | Add a comment                                        |
+| `GET`    | `/api/v1/issues/{id}/shares`           | List who an issue is shared with (owner only)        |
+| `POST`   | `/api/v1/issues/{id}/shares`           | Share an issue by email (owner only)                 |
+| `DELETE` | `/api/v1/issues/{id}/shares/{user_id}` | Revoke shared access (owner only)                    |
 
 ## Repository Layout
 
-The planned layout follows the official Full Stack FastAPI Template:
-
 ```text
 fastapi-issue-tracker/
-├── backend/              # FastAPI application, models, services, and tests
-├── frontend/             # React and TypeScript application
-├── scripts/              # Development and deployment helpers
-├── .github/              # GitHub Actions workflows
-├── docker-compose.yml    # Local and production services
-├── .env.example          # Documented environment variables
+├── backend/                # FastAPI application
+│   ├── app/
+│   │   ├── api/routes/     # login, users, issues route modules
+│   │   ├── core/           # config, security, permissions
+│   │   ├── alembic/        # database migrations
+│   │   └── models.py       # SQLModel tables and API schemas
+│   ├── tests/               # Pytest suite
+│   └── scripts/             # prestart, lint, format, test helpers
+├── frontend/                # React + TypeScript application
+│   ├── src/
+│   │   ├── client/          # generated OpenAPI client (types + SDK)
+│   │   ├── components/      # Issues, Pending, Sidebar, ui, etc.
+│   │   └── routes/          # TanStack Router file-based routes
+│   └── tests/                # Playwright end-to-end tests
+├── scripts/                  # Repo-wide dev/test/deploy helpers
+├── docs/                      # Design notes and migration plan
+├── .github/workflows/         # CI: backend tests, Playwright, pre-commit
+├── compose.yml                 # Local/production service definitions
+├── compose.override.yml        # Local development overrides (Traefik, hot reload)
+├── deployment.md / development.md
+├── .env.example                 # Documented environment variables
 ├── README.md
 └── LICENSE
 ```
 
 ## Getting Started
 
-The runnable application scaffold has not yet been committed. Once the initial implementation lands, the intended local workflow will be:
-
 ### Prerequisites
 
 - Git
 - Docker and Docker Compose
-- Python 3.10 or newer for backend development
-- Node.js 20 or newer for frontend development
+- [uv](https://docs.astral.sh/uv/) for backend Python dependency management
+- [bun](https://bun.sh/) for frontend dependency management (or Node.js 20+ with npm)
 
 ### Installation
 
 ```bash
 git clone https://github.com/FastIssue-Team/fastapi-issue-tracker.git
 cd fastapi-issue-tracker
+cp .env.example .env
 ```
 
-After the application scaffold is added:
+Edit `.env` and set at least `SECRET_KEY`, `FIRST_SUPERUSER`, and `FIRST_SUPERUSER_PASSWORD` (see [Configuration](#configuration)).
+
+Start the full stack with Docker Compose:
 
 ```bash
-cp .env.example .env
-docker compose up --build
+docker compose watch
 ```
 
-Expected development services:
+Development services:
 
-| Service         | Address                   |
-| --------------- | ------------------------- |
-| Web application | `http://localhost`        |
-| Backend API     | `http://localhost/api/v1` |
-| Swagger UI      | `http://localhost/docs`   |
-| ReDoc           | `http://localhost/redoc`  |
+| Service              | Address                          |
+| -------------------- | ---------------------------------- |
+| Frontend             | `http://localhost:5173`            |
+| Backend API          | `http://localhost:8000`            |
+| Swagger UI           | `http://localhost:8000/docs`       |
+| ReDoc                | `http://localhost:8000/redoc`      |
+| Adminer (DB admin)   | `http://localhost:8080`            |
+| Traefik dashboard    | `http://localhost:8090`            |
+| MailCatcher          | `http://localhost:1080`            |
 
-The final ports and commands will be updated when Docker Compose configuration is available.
+See [development.md](development.md) for the full local development guide, including running the backend and frontend outside Docker.
+
+### Backend only (without Docker)
+
+```bash
+cd backend
+uv sync
+uv run alembic upgrade head
+uv run fastapi dev app/main.py
+```
+
+### Frontend only (without Docker)
+
+```bash
+cd frontend
+bun install
+bun run generate-client   # regenerate the API client after backend schema changes
+bun run dev
+```
 
 ## Configuration
 
-Secrets must not be committed to Git. The project is expected to provide an `.env.example` containing safe placeholders for settings such as:
+Secrets must not be committed to Git; `.env` is git-ignored. `.env.example` documents every variable, including:
 
 ```dotenv
-PROJECT_NAME="Easy Tracker"
+PROJECT_NAME="FastAPI Issue Tracker"
 SECRET_KEY="replace-with-a-secure-random-value"
 FIRST_SUPERUSER="admin@example.com"
 FIRST_SUPERUSER_PASSWORD="replace-me"
-POSTGRES_SERVER="db"
-POSTGRES_DB="easy_tracker"
+POSTGRES_SERVER="localhost"
+POSTGRES_DB="app"
 POSTGRES_USER="postgres"
 POSTGRES_PASSWORD="replace-me"
+BACKEND_CORS_ORIGINS="http://localhost,http://localhost:5173"
+FRONTEND_HOST="http://localhost:5173"
 ```
 
 Generate a secure secret with:
@@ -278,62 +314,73 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 ## Development
 
-Development instructions will be expanded as the backend and frontend are introduced. The project intends to follow these conventions:
+The project follows these conventions:
 
-- Keep API schemas and database models explicitly typed.
-- Put authorization checks in backend services, never only in the UI.
-- Generate the frontend client from the backend OpenAPI schema.
-- Add migrations for every database schema change.
+- Keep API schemas and database models explicitly typed (SQLModel + Pydantic).
+- Put authorization checks in backend services (`app/core/permissions.py`), never only in the UI.
+- Regenerate the frontend client from the backend OpenAPI schema after any API change (`bash scripts/generate-client.sh`).
+- Add an Alembic migration for every database schema change.
 - Add or update tests with each behavior change.
 - Keep pull requests focused and document user-visible changes.
 
-## Testing
+Linting and formatting are handled by `prek` (backend: ruff; frontend: biome) and run automatically before each commit once installed — see [development.md](development.md#pre-commits-and-code-linting).
 
-The planned test suite includes:
+## Testing
 
 ```bash
 # Backend tests
-docker compose exec backend pytest
+cd backend
+uv run pytest
 
-# Frontend checks
+# Frontend end-to-end tests (spins up the app via Playwright config)
 cd frontend
-npm test
+bun run test
 
-# End-to-end tests
-npx playwright test
+# Full stack test run via Docker Compose (used in CI)
+bash scripts/test.sh
 ```
 
-These commands will become active after the corresponding project components are committed.
+CI runs the backend test suite, Playwright end-to-end tests, and pre-commit checks on every pull request (see `.github/workflows/`).
+
+## Deployment
+
+The application is deployed on [Railway](https://railway.com/), with the backend and frontend as separate services sharing a managed PostgreSQL database. See [deployment.md](deployment.md) for the general Docker/Traefik-based deployment guide this project builds on.
+
+When deploying schema changes, make sure the backend service's start command runs migrations before serving traffic, e.g.:
+
+```bash
+bash scripts/prestart.sh && fastapi run --workers 4
+```
 
 ## Roadmap
 
-### Phase 1 — Foundation
+### Phase 1 — Foundation ✅
 
 - Scaffold the application from the Full Stack FastAPI Template
 - Configure PostgreSQL, SQLModel, Alembic, and Docker Compose
 - Establish formatting, linting, testing, and CI
 
-### Phase 2 — Core issue tracking
+### Phase 2 — Core issue tracking ✅
 
 - Implement authentication and user management
 - Implement issue CRUD operations
-- Add status, priority, assignee, and progress fields
-- Build dashboard, list, create, edit, and detail pages
+- Add status, priority, and assignee fields
+- Build list, create, edit, and detail pages
 
-### Phase 3 — Collaboration
+### Phase 3 — Collaboration ✅
 
-- Add comments and activity history
+- Add comments
 - Add issue sharing and fine-grained permissions
-- Add search, filtering, sorting, and pagination
+- Add filtering by status, priority, and assignee
 
-### Phase 4 — Quality and release
+### Phase 4 — Quality and release (in progress)
 
-- Complete backend and end-to-end test coverage
-- Improve accessibility and responsive behavior
-- Document deployment and operational configuration
-- Publish the first development release
+- Issue progress percentage and activity history
+- Expand accessibility and responsive-behavior coverage
+- Search and sorting for the issue list
+- Pagination controls in the UI (API already supports `skip`/`limit`)
 
-Possible future additions include labels, attachments, notifications, project boards, audit logs, and third-party integrations. They are not part of the initial release unless added to the roadmap.
+Possible future additions include labels, attachments, notifications, project boards, audit logs, and third-party integrations. They are not part of the current release unless added to the roadmap above.
 
 ## Contributing
 
@@ -342,7 +389,7 @@ Contributions are welcome. Before submitting a change:
 1. Open or select an issue describing the work.
 2. Create a focused feature branch.
 3. Add tests for new or changed behavior.
-4. Run the relevant checks locally.
+4. Run the relevant checks locally (`uv run pytest`, `bun run test`, `uv run prek run --all-files`).
 5. Submit a pull request with a clear description and screenshots for UI changes.
 
 Please keep architectural proposals and large feature additions in a discussion or issue before implementation so the team can agree on scope and design.
