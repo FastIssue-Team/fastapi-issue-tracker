@@ -189,6 +189,9 @@ test.describe("Issue sharing", () => {
 
     const issueUrl = page.url()
 
+    await shareDialog.getByRole("button", { name: "Close" }).click()
+    await expect(shareDialog).not.toBeVisible()
+
     await logOutUser(page)
     await logInUser(page, sharedEmail, sharedPassword)
     await page.goto(issueUrl)
