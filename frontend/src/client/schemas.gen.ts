@@ -71,61 +71,44 @@ export const HTTPValidationErrorSchema = {
     title: 'HTTPValidationError'
 } as const;
 
-export const ItemCreateSchema = {
+export const CommentCreateSchema = {
     properties: {
-        title: {
+        content: {
             type: 'string',
-            maxLength: 255,
+            maxLength: 2000,
             minLength: 1,
-            title: 'Title'
-        },
-        description: {
-            anyOf: [
-                {
-                    type: 'string',
-                    maxLength: 255
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Description'
+            title: 'Content'
         }
     },
     type: 'object',
-    required: ['title'],
-    title: 'ItemCreate'
+    required: ['content'],
+    title: 'CommentCreate'
 } as const;
 
-export const ItemPublicSchema = {
+export const CommentPublicSchema = {
     properties: {
-        title: {
-            type: 'string',
-            maxLength: 255,
-            minLength: 1,
-            title: 'Title'
-        },
-        description: {
-            anyOf: [
-                {
-                    type: 'string',
-                    maxLength: 255
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Description'
-        },
         id: {
             type: 'string',
             format: 'uuid',
             title: 'Id'
         },
-        owner_id: {
+        issue_id: {
             type: 'string',
             format: 'uuid',
-            title: 'Owner Id'
+            title: 'Issue Id'
+        },
+        author_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Author Id'
+        },
+        author_email: {
+            type: 'string',
+            title: 'Author Email'
+        },
+        content: {
+            type: 'string',
+            title: 'Content'
         },
         created_at: {
             anyOf: [
@@ -141,11 +124,385 @@ export const ItemPublicSchema = {
         }
     },
     type: 'object',
-    required: ['title', 'id', 'owner_id'],
-    title: 'ItemPublic'
+    required: ['id', 'issue_id', 'author_id', 'author_email', 'content'],
+    title: 'CommentPublic'
 } as const;
 
-export const ItemUpdateSchema = {
+export const CommentsPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/CommentPublic'
+            },
+            type: 'array',
+            title: 'Data'
+        },
+        count: {
+            type: 'integer',
+            title: 'Count'
+        }
+    },
+    type: 'object',
+    required: ['data', 'count'],
+    title: 'CommentsPublic'
+} as const;
+
+export const IssueCreateSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Title'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 2000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        status: {
+            '$ref': '#/components/schemas/IssueStatus',
+            default: 'Open'
+        },
+        priority: {
+            type: 'integer',
+            maximum: 5,
+            minimum: 1,
+            default: 3,
+            title: 'Priority'
+        },
+        assignee_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assignee Id'
+        }
+    },
+    type: 'object',
+    required: ['title'],
+    title: 'IssueCreate'
+} as const;
+
+export const IssueDetailPublicSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Title'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 2000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        status: {
+            '$ref': '#/components/schemas/IssueStatus',
+            default: 'Open'
+        },
+        priority: {
+            type: 'integer',
+            maximum: 5,
+            minimum: 1,
+            default: 3,
+            title: 'Priority'
+        },
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        owner_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Owner Id'
+        },
+        owner_email: {
+            type: 'string',
+            title: 'Owner Email'
+        },
+        assignee_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assignee Id'
+        },
+        assignee_email: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assignee Email'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        },
+        updated_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Updated At'
+        },
+        is_owner: {
+            type: 'boolean',
+            title: 'Is Owner'
+        },
+        can_edit_status: {
+            type: 'boolean',
+            title: 'Can Edit Status'
+        },
+        can_edit_assignee: {
+            type: 'boolean',
+            title: 'Can Edit Assignee'
+        }
+    },
+    type: 'object',
+    required: ['title', 'id', 'owner_id', 'owner_email', 'assignee_id', 'assignee_email', 'is_owner', 'can_edit_status', 'can_edit_assignee'],
+    title: 'IssueDetailPublic'
+} as const;
+
+export const IssuePublicSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Title'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 2000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        status: {
+            '$ref': '#/components/schemas/IssueStatus',
+            default: 'Open'
+        },
+        priority: {
+            type: 'integer',
+            maximum: 5,
+            minimum: 1,
+            default: 3,
+            title: 'Priority'
+        },
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        owner_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Owner Id'
+        },
+        owner_email: {
+            type: 'string',
+            title: 'Owner Email'
+        },
+        assignee_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assignee Id'
+        },
+        assignee_email: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assignee Email'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        },
+        updated_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Updated At'
+        }
+    },
+    type: 'object',
+    required: ['title', 'id', 'owner_id', 'owner_email', 'assignee_id', 'assignee_email'],
+    title: 'IssuePublic'
+} as const;
+
+export const IssuesPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/IssuePublic'
+            },
+            type: 'array',
+            title: 'Data'
+        },
+        count: {
+            type: 'integer',
+            title: 'Count'
+        }
+    },
+    type: 'object',
+    required: ['data', 'count'],
+    title: 'IssuesPublic'
+} as const;
+
+export const IssueShareCreateSchema = {
+    properties: {
+        email: {
+            type: 'string',
+            format: 'email',
+            title: 'Email'
+        },
+        can_edit_status: {
+            type: 'boolean',
+            default: false,
+            title: 'Can Edit Status'
+        },
+        can_edit_assignee: {
+            type: 'boolean',
+            default: false,
+            title: 'Can Edit Assignee'
+        }
+    },
+    type: 'object',
+    required: ['email'],
+    title: 'IssueShareCreate'
+} as const;
+
+export const IssueSharePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        issue_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Issue Id'
+        },
+        user_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'User Id'
+        },
+        user_email: {
+            type: 'string',
+            title: 'User Email'
+        },
+        can_edit_status: {
+            type: 'boolean',
+            title: 'Can Edit Status'
+        },
+        can_edit_assignee: {
+            type: 'boolean',
+            title: 'Can Edit Assignee'
+        }
+    },
+    type: 'object',
+    required: ['id', 'issue_id', 'user_id', 'user_email', 'can_edit_status', 'can_edit_assignee'],
+    title: 'IssueSharePublic'
+} as const;
+
+export const IssueSharesPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/IssueSharePublic'
+            },
+            type: 'array',
+            title: 'Data'
+        }
+    },
+    type: 'object',
+    required: ['data'],
+    title: 'IssueSharesPublic'
+} as const;
+
+export const IssueStatusSchema = {
+    type: 'string',
+    enum: ['Open', 'In Progress', 'Done'],
+    title: 'IssueStatus'
+} as const;
+
+export const IssueUpdateSchema = {
     properties: {
         title: {
             anyOf: [
@@ -164,36 +521,52 @@ export const ItemUpdateSchema = {
             anyOf: [
                 {
                     type: 'string',
-                    maxLength: 255
+                    maxLength: 2000
                 },
                 {
                     type: 'null'
                 }
             ],
             title: 'Description'
-        }
-    },
-    type: 'object',
-    title: 'ItemUpdate'
-} as const;
-
-export const ItemsPublicSchema = {
-    properties: {
-        data: {
-            items: {
-                '$ref': '#/components/schemas/ItemPublic'
-            },
-            type: 'array',
-            title: 'Data'
         },
-        count: {
-            type: 'integer',
-            title: 'Count'
+        status: {
+            anyOf: [
+                {
+                    '$ref': '#/components/schemas/IssueStatus'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        priority: {
+            anyOf: [
+                {
+                    type: 'integer',
+                    maximum: 5,
+                    minimum: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Priority'
+        },
+        assignee_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Assignee Id'
         }
     },
     type: 'object',
-    required: ['data', 'count'],
-    title: 'ItemsPublic'
+    title: 'IssueUpdate'
 } as const;
 
 export const MessageSchema = {

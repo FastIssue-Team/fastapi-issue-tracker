@@ -2,6 +2,7 @@ import uuid
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import EmailStr
 from sqlmodel import col, delete, func, select
 
 from app import crud
@@ -13,7 +14,7 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.models import (
-    Item,
+    Issue,
     Message,
     UpdatePassword,
     User,
@@ -159,6 +160,20 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
     return user
 
 
+@router.get("/lookup", response_model=UserPublic)
+def lookup_user_by_email(
+    session: SessionDep, current_user: CurrentUser, email: EmailStr
+) -> Any:
+    """
+    Look up a user by email. Available to any authenticated user so an
+    issue's owner can find a user to assign or share the issue with.
+    """
+    user = crud.get_user_by_email(session=session, email=email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @router.get("/{user_id}", response_model=UserPublic)
 def read_user_by_id(
     user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser
@@ -225,7 +240,7 @@ def delete_user(
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
-    statement = delete(Item).where(col(Item.owner_id) == user_id)
+    statement = delete(Issue).where(col(Issue.owner_id) == user_id)
     session.exec(statement)
     session.delete(user)
     session.commit()

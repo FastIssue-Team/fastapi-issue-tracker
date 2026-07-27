@@ -5,7 +5,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { type ItemCreate, ItemsService } from "@/client"
+import { IssuesService, UsersService } from "@/client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,17 +27,29 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { LoadingButton } from "@/components/ui/loading-button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import useCustomToast from "@/hooks/useCustomToast"
 import { handleError } from "@/utils"
+import { priorityLabel } from "./issueDisplay"
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
+  priority: z.enum(["1", "2", "3", "4", "5"]),
+  assigneeEmail: z
+    .union([z.literal(""), z.string().email({ message: "Enter a valid email" })])
+    .optional(),
 })
 
 type FormData = z.infer<typeof formSchema>
 
-const AddItem = () => {
+const AddIssue = () => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()
@@ -49,20 +61,37 @@ const AddItem = () => {
     defaultValues: {
       title: "",
       description: "",
+      priority: "3",
+      assigneeEmail: "",
     },
   })
 
   const mutation = useMutation({
-    mutationFn: (data: ItemCreate) =>
-      ItemsService.createItem({ requestBody: data }),
+    mutationFn: async (data: FormData) => {
+      let assignee_id: string | undefined
+      if (data.assigneeEmail) {
+        const assignee = await UsersService.lookupUserByEmail({
+          email: data.assigneeEmail,
+        })
+        assignee_id = assignee.id
+      }
+      return IssuesService.createIssue({
+        requestBody: {
+          title: data.title,
+          description: data.description || undefined,
+          priority: Number(data.priority),
+          assignee_id,
+        },
+      })
+    },
     onSuccess: () => {
-      showSuccessToast("Item created successfully")
+      showSuccessToast("Issue created successfully")
       form.reset()
       setIsOpen(false)
     },
     onError: handleError.bind(showErrorToast),
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["issues"] })
     },
   })
 
@@ -75,14 +104,14 @@ const AddItem = () => {
       <DialogTrigger asChild>
         <Button className="my-4">
           <Plus className="mr-2" />
-          Add Item
+          Add Issue
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Item</DialogTitle>
+          <DialogTitle>Add Issue</DialogTitle>
           <DialogDescription>
-            Fill in the details to add a new item.
+            Fill in the details to create a new issue.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -122,6 +151,52 @@ const AddItem = () => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Priority</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((priority) => (
+                          <SelectItem key={priority} value={String(priority)}>
+                            {priorityLabel(priority)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="assigneeEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assignee email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="teammate@example.com"
+                        type="email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <DialogFooter>
@@ -141,4 +216,4 @@ const AddItem = () => {
   )
 }
 
-export default AddItem
+export default AddIssue

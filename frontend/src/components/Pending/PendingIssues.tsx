@@ -8,13 +8,15 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const PendingItems = () => (
+const PendingIssues = () => (
   <Table>
     <TableHeader>
       <TableRow>
         <TableHead>ID</TableHead>
         <TableHead>Title</TableHead>
-        <TableHead>Description</TableHead>
+        <TableHead>Status</TableHead>
+        <TableHead>Priority</TableHead>
+        <TableHead>Assignee</TableHead>
         <TableHead>
           <span className="sr-only">Actions</span>
         </TableHead>
@@ -30,7 +32,13 @@ const PendingItems = () => (
             <Skeleton className="h-4 w-32" />
           </TableCell>
           <TableCell>
-            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-4 w-20" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="h-4 w-24" />
+          </TableCell>
+          <TableCell>
+            <Skeleton className="h-4 w-32" />
           </TableCell>
           <TableCell>
             <div className="flex justify-end">
@@ -43,4 +51,4 @@ const PendingItems = () => (
   </Table>
 )
 
-export default PendingItems
+export default PendingIssues

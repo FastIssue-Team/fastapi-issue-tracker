@@ -3,25 +3,32 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { IssuesReadIssuesData, IssuesReadIssuesResponse, IssuesCreateIssueData, IssuesCreateIssueResponse, IssuesReadIssueData, IssuesReadIssueResponse, IssuesUpdateIssueData, IssuesUpdateIssueResponse, IssuesDeleteIssueData, IssuesDeleteIssueResponse, IssuesReadCommentsData, IssuesReadCommentsResponse, IssuesCreateCommentData, IssuesCreateCommentResponse, IssuesReadSharesData, IssuesReadSharesResponse, IssuesCreateShareData, IssuesCreateShareResponse, IssuesDeleteShareData, IssuesDeleteShareResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersLookupUserByEmailData, UsersLookupUserByEmailResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
-export class ItemsService {
+export class IssuesService {
     /**
-     * Read Items
-     * Retrieve items.
+     * Read Issues
+     * Retrieve issues owned by, or shared with, the current user.
+     * Superusers see all issues.
      * @param data The data for the request.
      * @param data.skip
      * @param data.limit
-     * @returns ItemsPublic Successful Response
+     * @param data.status
+     * @param data.priority
+     * @param data.assigneeId
+     * @returns IssuesPublic Successful Response
      * @throws ApiError
      */
-    public static readItems(data: ItemsReadItemsData = {}): CancelablePromise<ItemsReadItemsResponse> {
+    public static readIssues(data: IssuesReadIssuesData = {}): CancelablePromise<IssuesReadIssuesResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/items/',
+            url: '/api/v1/issues/',
             query: {
                 skip: data.skip,
-                limit: data.limit
+                limit: data.limit,
+                status: data.status,
+                priority: data.priority,
+                assignee_id: data.assigneeId
             },
             errors: {
                 422: 'Validation Error'
@@ -30,17 +37,17 @@ export class ItemsService {
     }
     
     /**
-     * Create Item
-     * Create new item.
+     * Create Issue
+     * Create a new issue.
      * @param data The data for the request.
      * @param data.requestBody
-     * @returns ItemPublic Successful Response
+     * @returns IssuePublic Successful Response
      * @throws ApiError
      */
-    public static createItem(data: ItemsCreateItemData): CancelablePromise<ItemsCreateItemResponse> {
+    public static createIssue(data: IssuesCreateIssueData): CancelablePromise<IssuesCreateIssueResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/api/v1/items/',
+            url: '/api/v1/issues/',
             body: data.requestBody,
             mediaType: 'application/json',
             errors: {
@@ -50,17 +57,17 @@ export class ItemsService {
     }
     
     /**
-     * Read Item
-     * Get item by ID.
+     * Read Issue
+     * Get issue by ID, including the current user's permissions on it.
      * @param data The data for the request.
      * @param data.id
-     * @returns ItemPublic Successful Response
+     * @returns IssueDetailPublic Successful Response
      * @throws ApiError
      */
-    public static readItem(data: ItemsReadItemData): CancelablePromise<ItemsReadItemResponse> {
+    public static readIssue(data: IssuesReadIssueData): CancelablePromise<IssuesReadIssueResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/api/v1/items/{id}',
+            url: '/api/v1/issues/{id}',
             path: {
                 id: data.id
             },
@@ -71,18 +78,22 @@ export class ItemsService {
     }
     
     /**
-     * Update Item
-     * Update an item.
+     * Update Issue
+     * Update an issue.
+     *
+     * The owner (or a superuser) may change any field. A user the issue was
+     * shared with may only change `status` (if granted) and/or `assignee_id`
+     * (if granted); any other field in the request is rejected.
      * @param data The data for the request.
      * @param data.id
      * @param data.requestBody
-     * @returns ItemPublic Successful Response
+     * @returns IssuePublic Successful Response
      * @throws ApiError
      */
-    public static updateItem(data: ItemsUpdateItemData): CancelablePromise<ItemsUpdateItemResponse> {
+    public static updateIssue(data: IssuesUpdateIssueData): CancelablePromise<IssuesUpdateIssueResponse> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/api/v1/items/{id}',
+            url: '/api/v1/issues/{id}',
             path: {
                 id: data.id
             },
@@ -95,19 +106,132 @@ export class ItemsService {
     }
     
     /**
-     * Delete Item
-     * Delete an item.
+     * Delete Issue
+     * Delete an issue. Owner or superuser only.
      * @param data The data for the request.
      * @param data.id
      * @returns Message Successful Response
      * @throws ApiError
      */
-    public static deleteItem(data: ItemsDeleteItemData): CancelablePromise<ItemsDeleteItemResponse> {
+    public static deleteIssue(data: IssuesDeleteIssueData): CancelablePromise<IssuesDeleteIssueResponse> {
         return __request(OpenAPI, {
             method: 'DELETE',
-            url: '/api/v1/items/{id}',
+            url: '/api/v1/issues/{id}',
             path: {
                 id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Comments
+     * List comments on an issue. Requires owner, shared, or superuser access.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns CommentsPublic Successful Response
+     * @throws ApiError
+     */
+    public static readComments(data: IssuesReadCommentsData): CancelablePromise<IssuesReadCommentsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/issues/{id}/comments',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Comment
+     * Add a comment to an issue. Requires owner, shared, or superuser access.
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns CommentPublic Successful Response
+     * @throws ApiError
+     */
+    public static createComment(data: IssuesCreateCommentData): CancelablePromise<IssuesCreateCommentResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/issues/{id}/comments',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Read Shares
+     * List the users an issue is shared with. Owner or superuser only.
+     * @param data The data for the request.
+     * @param data.id
+     * @returns IssueSharesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readShares(data: IssuesReadSharesData): CancelablePromise<IssuesReadSharesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/issues/{id}/shares',
+            path: {
+                id: data.id
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Create Share
+     * Share an issue with another user by email. Owner or superuser only.
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.requestBody
+     * @returns IssueSharePublic Successful Response
+     * @throws ApiError
+     */
+    public static createShare(data: IssuesCreateShareData): CancelablePromise<IssuesCreateShareResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/issues/{id}/shares',
+            path: {
+                id: data.id
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Delete Share
+     * Revoke a user's access to a shared issue. Owner or superuser only.
+     * @param data The data for the request.
+     * @param data.id
+     * @param data.userId
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteShare(data: IssuesDeleteShareData): CancelablePromise<IssuesDeleteShareResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/issues/{id}/shares/{user_id}',
+            path: {
+                id: data.id,
+                user_id: data.userId
             },
             errors: {
                 422: 'Validation Error'
@@ -359,6 +483,28 @@ export class UsersService {
             url: '/api/v1/users/signup',
             body: data.requestBody,
             mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Lookup User By Email
+     * Look up a user by email. Available to any authenticated user so an
+     * issue's owner can find a user to assign or share the issue with.
+     * @param data The data for the request.
+     * @param data.email
+     * @returns UserPublic Successful Response
+     * @throws ApiError
+     */
+    public static lookupUserByEmail(data: UsersLookupUserByEmailData): CancelablePromise<UsersLookupUserByEmailResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/users/lookup',
+            query: {
+                email: data.email
+            },
             errors: {
                 422: 'Validation Error'
             }
