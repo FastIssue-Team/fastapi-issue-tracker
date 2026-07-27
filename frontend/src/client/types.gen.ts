@@ -9,31 +9,99 @@ export type Body_login_login_access_token = {
     client_secret?: (string | null);
 };
 
+export type CommentCreate = {
+    content: string;
+};
+
+export type CommentPublic = {
+    id: string;
+    issue_id: string;
+    author_id: string;
+    author_email: string;
+    content: string;
+    created_at?: (string | null);
+};
+
+export type CommentsPublic = {
+    data: Array<CommentPublic>;
+    count: number;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
 
-export type ItemCreate = {
+export type IssueCreate = {
     title: string;
     description?: (string | null);
+    status?: IssueStatus;
+    priority?: number;
+    assignee_id?: (string | null);
 };
 
-export type ItemPublic = {
+export type IssueDetailPublic = {
     title: string;
     description?: (string | null);
+    status?: IssueStatus;
+    priority?: number;
     id: string;
     owner_id: string;
+    owner_email: string;
+    assignee_id: (string | null);
+    assignee_email: (string | null);
     created_at?: (string | null);
+    updated_at?: (string | null);
+    is_owner: boolean;
+    can_edit_status: boolean;
+    can_edit_assignee: boolean;
 };
 
-export type ItemsPublic = {
-    data: Array<ItemPublic>;
+export type IssuePublic = {
+    title: string;
+    description?: (string | null);
+    status?: IssueStatus;
+    priority?: number;
+    id: string;
+    owner_id: string;
+    owner_email: string;
+    assignee_id: (string | null);
+    assignee_email: (string | null);
+    created_at?: (string | null);
+    updated_at?: (string | null);
+};
+
+export type IssuesPublic = {
+    data: Array<IssuePublic>;
     count: number;
 };
 
-export type ItemUpdate = {
+export type IssueShareCreate = {
+    email: string;
+    can_edit_status?: boolean;
+    can_edit_assignee?: boolean;
+};
+
+export type IssueSharePublic = {
+    id: string;
+    issue_id: string;
+    user_id: string;
+    user_email: string;
+    can_edit_status: boolean;
+    can_edit_assignee: boolean;
+};
+
+export type IssueSharesPublic = {
+    data: Array<IssueSharePublic>;
+};
+
+export type IssueStatus = 'Open' | 'In Progress' | 'Done';
+
+export type IssueUpdate = {
     title?: (string | null);
     description?: (string | null);
+    status?: (IssueStatus | null);
+    priority?: (number | null);
+    assignee_id?: (string | null);
 };
 
 export type Message = {
@@ -113,37 +181,73 @@ export type ValidationError = {
     };
 };
 
-export type ItemsReadItemsData = {
+export type IssuesReadIssuesData = {
+    assigneeId?: (string | null);
     limit?: number;
+    priority?: (number | null);
     skip?: number;
+    status?: (IssueStatus | null);
 };
 
-export type ItemsReadItemsResponse = (ItemsPublic);
+export type IssuesReadIssuesResponse = (IssuesPublic);
 
-export type ItemsCreateItemData = {
-    requestBody: ItemCreate;
+export type IssuesCreateIssueData = {
+    requestBody: IssueCreate;
 };
 
-export type ItemsCreateItemResponse = (ItemPublic);
+export type IssuesCreateIssueResponse = (IssuePublic);
 
-export type ItemsReadItemData = {
+export type IssuesReadIssueData = {
     id: string;
 };
 
-export type ItemsReadItemResponse = (ItemPublic);
+export type IssuesReadIssueResponse = (IssueDetailPublic);
 
-export type ItemsUpdateItemData = {
+export type IssuesUpdateIssueData = {
     id: string;
-    requestBody: ItemUpdate;
+    requestBody: IssueUpdate;
 };
 
-export type ItemsUpdateItemResponse = (ItemPublic);
+export type IssuesUpdateIssueResponse = (IssuePublic);
 
-export type ItemsDeleteItemData = {
+export type IssuesDeleteIssueData = {
     id: string;
 };
 
-export type ItemsDeleteItemResponse = (Message);
+export type IssuesDeleteIssueResponse = (Message);
+
+export type IssuesReadCommentsData = {
+    id: string;
+};
+
+export type IssuesReadCommentsResponse = (CommentsPublic);
+
+export type IssuesCreateCommentData = {
+    id: string;
+    requestBody: CommentCreate;
+};
+
+export type IssuesCreateCommentResponse = (CommentPublic);
+
+export type IssuesReadSharesData = {
+    id: string;
+};
+
+export type IssuesReadSharesResponse = (IssueSharesPublic);
+
+export type IssuesCreateShareData = {
+    id: string;
+    requestBody: IssueShareCreate;
+};
+
+export type IssuesCreateShareResponse = (IssueSharePublic);
+
+export type IssuesDeleteShareData = {
+    id: string;
+    userId: string;
+};
+
+export type IssuesDeleteShareResponse = (Message);
 
 export type LoginLoginAccessTokenData = {
     formData: Body_login_login_access_token;
@@ -211,6 +315,12 @@ export type UsersRegisterUserData = {
 };
 
 export type UsersRegisterUserResponse = (UserPublic);
+
+export type UsersLookupUserByEmailData = {
+    email: string;
+};
+
+export type UsersLookupUserByEmailResponse = (UserPublic);
 
 export type UsersReadUserByIdData = {
     userId: string;

@@ -16,8 +16,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as LayoutSettingsRouteImport } from './routes/_layout/settings'
-import { Route as LayoutItemsRouteImport } from './routes/_layout/items'
+import { Route as LayoutIssuesRouteImport } from './routes/_layout/issues'
 import { Route as LayoutAdminRouteImport } from './routes/_layout/admin'
+import { Route as LayoutIssuesIndexRouteImport } from './routes/_layout/issues/index'
+import { Route as LayoutIssuesIssueIdRouteImport } from './routes/_layout/issues/$issueId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -53,15 +55,25 @@ const LayoutSettingsRoute = LayoutSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => LayoutRoute,
 } as any)
-const LayoutItemsRoute = LayoutItemsRouteImport.update({
-  id: '/items',
-  path: '/items',
+const LayoutIssuesRoute = LayoutIssuesRouteImport.update({
+  id: '/issues',
+  path: '/issues',
   getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutAdminRoute = LayoutAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => LayoutRoute,
+} as any)
+const LayoutIssuesIndexRoute = LayoutIssuesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutIssuesRoute,
+} as any)
+const LayoutIssuesIssueIdRoute = LayoutIssuesIssueIdRouteImport.update({
+  id: '/$issueId',
+  path: '/$issueId',
+  getParentRoute: () => LayoutIssuesRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -71,8 +83,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRoute
-  '/items': typeof LayoutItemsRoute
+  '/issues': typeof LayoutIssuesRouteWithChildren
   '/settings': typeof LayoutSettingsRoute
+  '/issues/$issueId': typeof LayoutIssuesIssueIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -80,9 +93,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/admin': typeof LayoutAdminRoute
-  '/items': typeof LayoutItemsRoute
   '/settings': typeof LayoutSettingsRoute
+  '/issues/$issueId': typeof LayoutIssuesIssueIdRoute
   '/': typeof LayoutIndexRoute
+  '/issues': typeof LayoutIssuesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,9 +106,11 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_layout/admin': typeof LayoutAdminRoute
-  '/_layout/items': typeof LayoutItemsRoute
+  '/_layout/issues': typeof LayoutIssuesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/issues/': typeof LayoutIssuesIndexRoute
+  '/_layout/issues/$issueId': typeof LayoutIssuesIssueIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,8 +121,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
-    | '/items'
+    | '/issues'
     | '/settings'
+    | '/issues/$issueId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -114,9 +131,10 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/admin'
-    | '/items'
     | '/settings'
+    | '/issues/$issueId'
     | '/'
+    | '/issues'
   id:
     | '__root__'
     | '/_layout'
@@ -125,9 +143,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_layout/admin'
-    | '/_layout/items'
+    | '/_layout/issues'
     | '/_layout/settings'
     | '/_layout/'
+    | '/_layout/issues/'
+    | '/_layout/issues/$issueId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -189,11 +209,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSettingsRouteImport
       parentRoute: typeof LayoutRoute
     }
-    '/_layout/items': {
-      id: '/_layout/items'
-      path: '/items'
-      fullPath: '/items'
-      preLoaderRoute: typeof LayoutItemsRouteImport
+    '/_layout/issues': {
+      id: '/_layout/issues'
+      path: '/issues'
+      fullPath: '/issues'
+      preLoaderRoute: typeof LayoutIssuesRouteImport
       parentRoute: typeof LayoutRoute
     }
     '/_layout/admin': {
@@ -203,19 +223,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAdminRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/issues/': {
+      id: '/_layout/issues/'
+      path: '/'
+      fullPath: '/issues'
+      preLoaderRoute: typeof LayoutIssuesIndexRouteImport
+      parentRoute: typeof LayoutIssuesRoute
+    }
+    '/_layout/issues/$issueId': {
+      id: '/_layout/issues/$issueId'
+      path: '/$issueId'
+      fullPath: '/issues/$issueId'
+      preLoaderRoute: typeof LayoutIssuesIssueIdRouteImport
+      parentRoute: typeof LayoutIssuesRoute
+    }
   }
 }
 
+interface LayoutIssuesRouteChildren {
+  LayoutIssuesIndexRoute: typeof LayoutIssuesIndexRoute
+  LayoutIssuesIssueIdRoute: typeof LayoutIssuesIssueIdRoute
+}
+
+const LayoutIssuesRouteChildren: LayoutIssuesRouteChildren = {
+  LayoutIssuesIndexRoute: LayoutIssuesIndexRoute,
+  LayoutIssuesIssueIdRoute: LayoutIssuesIssueIdRoute,
+}
+
+const LayoutIssuesRouteWithChildren = LayoutIssuesRoute._addFileChildren(
+  LayoutIssuesRouteChildren,
+)
+
 interface LayoutRouteChildren {
   LayoutAdminRoute: typeof LayoutAdminRoute
-  LayoutItemsRoute: typeof LayoutItemsRoute
+  LayoutIssuesRoute: typeof LayoutIssuesRouteWithChildren
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAdminRoute: LayoutAdminRoute,
-  LayoutItemsRoute: LayoutItemsRoute,
+  LayoutIssuesRoute: LayoutIssuesRouteWithChildren,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
