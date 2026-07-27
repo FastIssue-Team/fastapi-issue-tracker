@@ -65,7 +65,7 @@ function IssueFilters({ search }: { search: IssuesSearch }) {
         value={search.status ?? ALL_VALUE}
         onValueChange={(value) =>
           navigate({
-            search: (prev) => ({
+            search: (prev: IssuesSearch) => ({
               ...prev,
               status: value === ALL_VALUE ? undefined : (value as IssuesSearch["status"]),
             }),
@@ -89,7 +89,7 @@ function IssueFilters({ search }: { search: IssuesSearch }) {
         value={search.priority ? String(search.priority) : ALL_VALUE}
         onValueChange={(value) =>
           navigate({
-            search: (prev) => ({
+            search: (prev: IssuesSearch) => ({
               ...prev,
               priority: value === ALL_VALUE ? undefined : Number(value),
             }),
@@ -113,7 +113,7 @@ function IssueFilters({ search }: { search: IssuesSearch }) {
         variant={search.assignedToMe ? "default" : "outline"}
         onClick={() =>
           navigate({
-            search: (prev) => ({
+            search: (prev: IssuesSearch) => ({
               ...prev,
               assignedToMe: !prev.assignedToMe || undefined,
             }),
