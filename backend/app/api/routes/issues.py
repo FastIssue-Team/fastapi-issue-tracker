@@ -3,11 +3,10 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import or_
-from sqlalchemy.exc import IntegrityError, ProgrammingError
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, func, select
 
 from app.api.deps import CurrentUser, SessionDep
-from app.core.debug_agent import agent_log, inspect_schema
 from app.core.permissions import get_issue_access, get_issue_or_404
 from app.crud import get_user_by_email
 from app.models import (
@@ -77,36 +76,16 @@ def read_issues(
         filters.append(_visible_issues_condition(current_user))
 
     count_statement = select(func.count()).select_from(Issue).where(*filters)
-    try:
-        count = session.exec(count_statement).one()
+    count = session.exec(count_statement).one()
 
-        statement = (
-            select(Issue)
-            .where(*filters)
-            .order_by(col(Issue.created_at).desc())
-            .offset(skip)
-            .limit(limit)
-        )
-        issues = session.exec(statement).all()
-    except ProgrammingError as e:
-        # #region agent log
-        schema = None
-        try:
-            schema = inspect_schema()
-        except Exception as inspect_err:
-            schema = {"inspect_error": str(inspect_err)}
-        agent_log(
-            "issues.py:read_issues",
-            "ProgrammingError querying Issue",
-            {
-                "error": str(e.orig) if getattr(e, "orig", None) else str(e),
-                "error_type": type(e).__name__,
-                "schema": schema,
-            },
-            hypothesis_id="A,B,C,D",
-        )
-        # #endregion
-        raise
+    statement = (
+        select(Issue)
+        .where(*filters)
+        .order_by(col(Issue.created_at).desc())
+        .offset(skip)
+        .limit(limit)
+    )
+    issues = session.exec(statement).all()
 
     issues_public = [_issue_to_public(issue) for issue in issues]
     return IssuesPublic(data=issues_public, count=count)
