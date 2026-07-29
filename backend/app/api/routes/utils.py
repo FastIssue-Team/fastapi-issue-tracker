@@ -1,7 +1,10 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends
 from pydantic.networks import EmailStr
 
 from app.api.deps import get_current_active_superuser
+from app.core.debug_agent import agent_log, inspect_schema
 from app.models import Message
 from app.utils import generate_test_email, send_email
 
@@ -29,3 +32,28 @@ def test_email(email_to: EmailStr) -> Message:
 @router.get("/health-check/")
 async def health_check() -> bool:
     return True
+
+
+@router.get("/debug-schema/")
+def debug_schema() -> dict[str, Any]:
+    """Temporary debug endpoint for session 7f7cc1 — remove after fix verified."""
+    # #region agent log
+    try:
+        schema = inspect_schema()
+        agent_log(
+            "utils.py:debug_schema",
+            "debug-schema endpoint hit",
+            schema,
+            hypothesis_id="A,B,C,D,E",
+        )
+        return schema
+    except Exception as e:
+        data = {"error": str(e), "error_type": type(e).__name__}
+        agent_log(
+            "utils.py:debug_schema",
+            "debug-schema failed",
+            data,
+            hypothesis_id="E",
+        )
+        return data
+    # #endregion
