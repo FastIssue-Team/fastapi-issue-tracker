@@ -35,4 +35,6 @@ RUN uv sync --frozen --package app
 
 WORKDIR /app/backend/
 
-CMD ["fastapi", "run", "--workers", "4"]
+# Run migrations + seed before serving. Required on platforms (e.g. Railway)
+# that use this image CMD without a separate prestart service.
+CMD ["bash", "-c", "bash scripts/prestart.sh && fastapi run --workers 4"]
