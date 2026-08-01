@@ -1,5 +1,5 @@
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from enum import Enum
 
 from pydantic import EmailStr
@@ -96,6 +96,7 @@ class IssueBase(SQLModel):
     # changes to the allowed values a simple app-level concern.
     status: IssueStatus = Field(default=IssueStatus.OPEN, sa_type=String(20))
     priority: int = Field(default=3, ge=1, le=5)
+    due_date: date | None = None
 
 
 # Properties to receive on issue creation
@@ -110,6 +111,7 @@ class IssueUpdate(SQLModel):
     status: IssueStatus | None = None
     priority: int | None = Field(default=None, ge=1, le=5)
     assignee_id: uuid.UUID | None = None
+    due_date: date | None = None
 
 
 # Database model, database table inferred from class name

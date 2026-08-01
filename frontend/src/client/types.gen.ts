@@ -36,6 +36,7 @@ export type IssueCreate = {
     description?: (string | null);
     status?: IssueStatus;
     priority?: number;
+    due_date?: (string | null);
     assignee_id?: (string | null);
 };
 
@@ -44,6 +45,7 @@ export type IssueDetailPublic = {
     description?: (string | null);
     status?: IssueStatus;
     priority?: number;
+    due_date?: (string | null);
     id: string;
     owner_id: string;
     owner_email: string;
@@ -61,6 +63,7 @@ export type IssuePublic = {
     description?: (string | null);
     status?: IssueStatus;
     priority?: number;
+    due_date?: (string | null);
     id: string;
     owner_id: string;
     owner_email: string;
@@ -68,11 +71,6 @@ export type IssuePublic = {
     assignee_email: (string | null);
     created_at?: (string | null);
     updated_at?: (string | null);
-};
-
-export type IssuesPublic = {
-    data: Array<IssuePublic>;
-    count: number;
 };
 
 export type IssueShareCreate = {
@@ -94,6 +92,11 @@ export type IssueSharesPublic = {
     data: Array<IssueSharePublic>;
 };
 
+export type IssuesPublic = {
+    data: Array<IssuePublic>;
+    count: number;
+};
+
 export type IssueStatus = 'Open' | 'In Progress' | 'Done';
 
 export type IssueUpdate = {
@@ -102,6 +105,7 @@ export type IssueUpdate = {
     status?: (IssueStatus | null);
     priority?: (number | null);
     assignee_id?: (string | null);
+    due_date?: (string | null);
 };
 
 export type Message = {

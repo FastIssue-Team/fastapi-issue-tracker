@@ -49,6 +49,42 @@ def test_create_issue_with_status_priority_assignee(
     assert content["assignee_id"] == str(assignee.id)
 
 
+def test_create_issue_with_due_date(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    data = {
+        "title": "Issue with due date",
+        "description": "Calendar test issue",
+        "due_date": "2026-08-10",
+    }
+    response = client.post(
+        f"{settings.API_V1_STR}/issues/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 200
+    content = response.json()
+    assert content["title"] == data["title"]
+    assert content["due_date"] == data["due_date"]
+
+
+def test_create_issue_without_due_date(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    data = {
+        "title": "Issue without due date",
+        "description": "No deadline",
+    }
+    response = client.post(
+        f"{settings.API_V1_STR}/issues/",
+        headers=superuser_token_headers,
+        json=data,
+    )
+    assert response.status_code == 200
+    content = response.json()
+    assert content["due_date"] is None
+
+
 def test_read_issue(
     client: TestClient, superuser_token_headers: dict[str, str], db: Session
 ) -> None:
@@ -159,6 +195,49 @@ def test_update_issue(
     assert content["description"] == data["description"]
     assert content["id"] == str(issue.id)
     assert content["owner_id"] == str(issue.owner_id)
+
+
+def test_update_issue_due_date(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    issue = create_random_issue(db)
+    data = {"due_date": "2026-08-15"}
+
+    response = client.put(
+        f"{settings.API_V1_STR}/issues/{issue.id}",
+        headers=superuser_token_headers,
+        json=data,
+    )
+
+    assert response.status_code == 200
+    content = response.json()
+    assert content["due_date"] == data["due_date"]
+    assert content["id"] == str(issue.id)
+
+
+def test_clear_issue_due_date(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    issue = create_random_issue(db)
+
+    set_response = client.put(
+        f"{settings.API_V1_STR}/issues/{issue.id}",
+        headers=superuser_token_headers,
+        json={"due_date": "2026-08-15"},
+    )
+    assert set_response.status_code == 200
+    assert set_response.json()["due_date"] == "2026-08-15"
+
+    clear_response = client.put(
+        f"{settings.API_V1_STR}/issues/{issue.id}",
+        headers=superuser_token_headers,
+        json={"due_date": None},
+    )
+
+    assert clear_response.status_code == 200
+    content = clear_response.json()
+    assert content["due_date"] is None
+    assert content["id"] == str(issue.id)
 
 
 def test_update_issue_not_found(
