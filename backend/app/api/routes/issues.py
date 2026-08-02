@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -18,11 +19,11 @@ from app.models import (
     IssueCreate,
     IssueDetailPublic,
     IssuePublic,
-    IssuesPublic,
     IssueShare,
     IssueShareCreate,
     IssueSharePublic,
     IssueSharesPublic,
+    IssuesPublic,
     IssueStatus,
     IssueUpdate,
     Message,
@@ -89,6 +90,45 @@ def read_issues(
 
     issues_public = [_issue_to_public(issue) for issue in issues]
     return IssuesPublic(data=issues_public, count=count)
+
+
+@router.get("/calendar", response_model=IssuesPublic)
+def read_calendar_issues(
+    session: SessionDep,
+    current_user: CurrentUser,
+    start: date,
+    end: date,
+) -> Any:
+    """
+    Retrieve visible issues with due dates inside an inclusive date range.
+    """
+    if start > end:
+        raise HTTPException(
+            status_code=400,
+            detail="Start date must be on or before end date",
+        )
+
+    filters = [
+        Issue.due_date.is_not(None),
+        Issue.due_date >= start,
+        Issue.due_date <= end,
+    ]
+
+    if not current_user.is_superuser:
+        filters.append(_visible_issues_condition(current_user))
+
+    statement = (
+        select(Issue)
+        .where(*filters)
+        .order_by(
+            col(Issue.due_date).asc(),
+            col(Issue.created_at).desc(),
+        )
+    )
+    issues = session.exec(statement).all()
+
+    issues_public = [_issue_to_public(issue) for issue in issues]
+    return IssuesPublic(data=issues_public, count=len(issues_public))
 
 
 @router.get("/{id}", response_model=IssueDetailPublic)
@@ -178,9 +218,7 @@ def delete_issue(
 
 
 @router.get("/{id}/comments", response_model=CommentsPublic)
-def read_comments(
-    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
-) -> Any:
+def read_comments(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
     """
     List comments on an issue. Requires owner, shared, or superuser access.
     """

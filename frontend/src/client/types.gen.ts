@@ -201,6 +201,13 @@ export type IssuesCreateIssueData = {
 
 export type IssuesCreateIssueResponse = (IssuePublic);
 
+export type IssuesReadCalendarIssuesData = {
+    end: string;
+    start: string;
+};
+
+export type IssuesReadCalendarIssuesResponse = (IssuesPublic);
+
 export type IssuesReadIssueData = {
     id: string;
 };

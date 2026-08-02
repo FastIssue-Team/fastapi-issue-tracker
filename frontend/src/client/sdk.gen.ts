@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { IssuesReadIssuesData, IssuesReadIssuesResponse, IssuesCreateIssueData, IssuesCreateIssueResponse, IssuesReadIssueData, IssuesReadIssueResponse, IssuesUpdateIssueData, IssuesUpdateIssueResponse, IssuesDeleteIssueData, IssuesDeleteIssueResponse, IssuesReadCommentsData, IssuesReadCommentsResponse, IssuesCreateCommentData, IssuesCreateCommentResponse, IssuesReadSharesData, IssuesReadSharesResponse, IssuesCreateShareData, IssuesCreateShareResponse, IssuesDeleteShareData, IssuesDeleteShareResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersLookupUserByEmailData, UsersLookupUserByEmailResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { IssuesReadIssuesData, IssuesReadIssuesResponse, IssuesCreateIssueData, IssuesCreateIssueResponse, IssuesReadCalendarIssuesData, IssuesReadCalendarIssuesResponse, IssuesReadIssueData, IssuesReadIssueResponse, IssuesUpdateIssueData, IssuesUpdateIssueResponse, IssuesDeleteIssueData, IssuesDeleteIssueResponse, IssuesReadCommentsData, IssuesReadCommentsResponse, IssuesCreateCommentData, IssuesCreateCommentResponse, IssuesReadSharesData, IssuesReadSharesResponse, IssuesCreateShareData, IssuesCreateShareResponse, IssuesDeleteShareData, IssuesDeleteShareResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersLookupUserByEmailData, UsersLookupUserByEmailResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class IssuesService {
     /**
@@ -35,7 +35,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Create Issue
      * Create a new issue.
@@ -55,7 +55,30 @@ export class IssuesService {
             }
         });
     }
-    
+
+    /**
+     * Read Calendar Issues
+     * Retrieve visible issues with due dates inside an inclusive date range.
+     * @param data The data for the request.
+     * @param data.start
+     * @param data.end
+     * @returns IssuesPublic Successful Response
+     * @throws ApiError
+     */
+    public static readCalendarIssues(data: IssuesReadCalendarIssuesData): CancelablePromise<IssuesReadCalendarIssuesResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/issues/calendar',
+            query: {
+                start: data.start,
+                end: data.end
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+
     /**
      * Read Issue
      * Get issue by ID, including the current user's permissions on it.
@@ -76,7 +99,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Update Issue
      * Update an issue.
@@ -104,7 +127,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Delete Issue
      * Delete an issue. Owner or superuser only.
@@ -125,7 +148,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Read Comments
      * List comments on an issue. Requires owner, shared, or superuser access.
@@ -146,7 +169,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Create Comment
      * Add a comment to an issue. Requires owner, shared, or superuser access.
@@ -170,7 +193,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Read Shares
      * List the users an issue is shared with. Owner or superuser only.
@@ -191,7 +214,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Create Share
      * Share an issue with another user by email. Owner or superuser only.
@@ -215,7 +238,7 @@ export class IssuesService {
             }
         });
     }
-    
+
     /**
      * Delete Share
      * Revoke a user's access to a shared issue. Owner or superuser only.
@@ -260,7 +283,7 @@ export class LoginService {
             }
         });
     }
-    
+
     /**
      * Test Token
      * Test access token
@@ -273,7 +296,7 @@ export class LoginService {
             url: '/api/v1/login/test-token'
         });
     }
-    
+
     /**
      * Recover Password
      * Password Recovery
@@ -294,7 +317,7 @@ export class LoginService {
             }
         });
     }
-    
+
     /**
      * Reset Password
      * Reset password
@@ -314,7 +337,7 @@ export class LoginService {
             }
         });
     }
-    
+
     /**
      * Recover Password Html Content
      * HTML Content for Password Recovery
@@ -382,7 +405,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Create User
      * Create new user.
@@ -402,7 +425,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Read User Me
      * Get current user.
@@ -415,7 +438,7 @@ export class UsersService {
             url: '/api/v1/users/me'
         });
     }
-    
+
     /**
      * Delete User Me
      * Delete own user.
@@ -428,7 +451,7 @@ export class UsersService {
             url: '/api/v1/users/me'
         });
     }
-    
+
     /**
      * Update User Me
      * Update own user.
@@ -448,7 +471,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Update Password Me
      * Update own password.
@@ -468,7 +491,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Register User
      * Create new user without the need to be logged in.
@@ -488,7 +511,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Lookup User By Email
      * Look up a user by email. Available to any authenticated user so an
@@ -510,7 +533,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Read User By Id
      * Get a specific user by id.
@@ -531,7 +554,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Update User
      * Update a user.
@@ -555,7 +578,7 @@ export class UsersService {
             }
         });
     }
-    
+
     /**
      * Delete User
      * Delete a user.
@@ -599,7 +622,7 @@ export class UtilsService {
             }
         });
     }
-    
+
     /**
      * Health Check
      * @returns boolean Successful Response
