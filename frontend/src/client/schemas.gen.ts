@@ -57,20 +57,6 @@ export const Body_login_login_access_tokenSchema = {
     title: 'Body_login-login_access_token'
 } as const;
 
-export const HTTPValidationErrorSchema = {
-    properties: {
-        detail: {
-            items: {
-                '$ref': '#/components/schemas/ValidationError'
-            },
-            type: 'array',
-            title: 'Detail'
-        }
-    },
-    type: 'object',
-    title: 'HTTPValidationError'
-} as const;
-
 export const CommentCreateSchema = {
     properties: {
         content: {
@@ -147,6 +133,20 @@ export const CommentsPublicSchema = {
     title: 'CommentsPublic'
 } as const;
 
+export const HTTPValidationErrorSchema = {
+    properties: {
+        detail: {
+            items: {
+                '$ref': '#/components/schemas/ValidationError'
+            },
+            type: 'array',
+            title: 'Detail'
+        }
+    },
+    type: 'object',
+    title: 'HTTPValidationError'
+} as const;
+
 export const IssueCreateSchema = {
     properties: {
         title: {
@@ -175,8 +175,20 @@ export const IssueCreateSchema = {
             type: 'integer',
             maximum: 5,
             minimum: 1,
-            default: 3,
-            title: 'Priority'
+            title: 'Priority',
+            default: 3
+        },
+        due_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Due Date'
         },
         assignee_id: {
             anyOf: [
@@ -224,8 +236,20 @@ export const IssueDetailPublicSchema = {
             type: 'integer',
             maximum: 5,
             minimum: 1,
-            default: 3,
-            title: 'Priority'
+            title: 'Priority',
+            default: 3
+        },
+        due_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Due Date'
         },
         id: {
             type: 'string',
@@ -334,8 +358,20 @@ export const IssuePublicSchema = {
             type: 'integer',
             maximum: 5,
             minimum: 1,
-            default: 3,
-            title: 'Priority'
+            title: 'Priority',
+            default: 3
+        },
+        due_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Due Date'
         },
         id: {
             type: 'string',
@@ -404,25 +440,6 @@ export const IssuePublicSchema = {
     title: 'IssuePublic'
 } as const;
 
-export const IssuesPublicSchema = {
-    properties: {
-        data: {
-            items: {
-                '$ref': '#/components/schemas/IssuePublic'
-            },
-            type: 'array',
-            title: 'Data'
-        },
-        count: {
-            type: 'integer',
-            title: 'Count'
-        }
-    },
-    type: 'object',
-    required: ['data', 'count'],
-    title: 'IssuesPublic'
-} as const;
-
 export const IssueShareCreateSchema = {
     properties: {
         email: {
@@ -432,13 +449,13 @@ export const IssueShareCreateSchema = {
         },
         can_edit_status: {
             type: 'boolean',
-            default: false,
-            title: 'Can Edit Status'
+            title: 'Can Edit Status',
+            default: false
         },
         can_edit_assignee: {
             type: 'boolean',
-            default: false,
-            title: 'Can Edit Assignee'
+            title: 'Can Edit Assignee',
+            default: false
         }
     },
     type: 'object',
@@ -563,10 +580,41 @@ export const IssueUpdateSchema = {
                 }
             ],
             title: 'Assignee Id'
+        },
+        due_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Due Date'
         }
     },
     type: 'object',
     title: 'IssueUpdate'
+} as const;
+
+export const IssuesPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/IssuePublic'
+            },
+            type: 'array',
+            title: 'Data'
+        },
+        count: {
+            type: 'integer',
+            title: 'Count'
+        }
+    },
+    type: 'object',
+    required: ['data', 'count'],
+    title: 'IssuesPublic'
 } as const;
 
 export const MessageSchema = {
