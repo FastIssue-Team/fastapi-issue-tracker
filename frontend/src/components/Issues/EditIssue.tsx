@@ -16,6 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import {
@@ -44,6 +45,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   status: z.enum(["Open", "In Progress", "Done"]),
   priority: z.enum(["1", "2", "3", "4", "5"]),
+  dueDate: z.string().optional(),
   changeAssignee: z.boolean(),
   assigneeEmail: z
     .union([z.literal(""), z.string().email({ message: "Enter a valid email" })])
@@ -55,9 +57,10 @@ type FormData = z.infer<typeof formSchema>
 interface EditIssueProps {
   issue: IssuePublic
   onSuccess: () => void
+  trigger?: React.ReactNode
 }
 
-const EditIssue = ({ issue, onSuccess }: EditIssueProps) => {
+const EditIssue = ({ issue, onSuccess, trigger }: EditIssueProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()
@@ -71,6 +74,7 @@ const EditIssue = ({ issue, onSuccess }: EditIssueProps) => {
       description: issue.description ?? "",
       status: issue.status,
       priority: String(issue.priority) as FormData["priority"],
+      dueDate: issue.due_date ?? "",
       changeAssignee: false,
       assigneeEmail: issue.assignee_email ?? "",
     },
@@ -85,6 +89,7 @@ const EditIssue = ({ issue, onSuccess }: EditIssueProps) => {
         description: data.description || null,
         status: data.status,
         priority: Number(data.priority),
+        due_date: data.dueDate || null,
       }
       if (data.changeAssignee) {
         if (data.assigneeEmail) {
@@ -115,13 +120,17 @@ const EditIssue = ({ issue, onSuccess }: EditIssueProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuItem
-        onSelect={(e) => e.preventDefault()}
-        onClick={() => setIsOpen(true)}
-      >
-        <Pencil />
-        Edit Issue
-      </DropdownMenuItem>
+      {trigger ? (
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
+      ) : (
+        <DropdownMenuItem
+          onSelect={(e) => e.preventDefault()}
+          onClick={() => setIsOpen(true)}
+        >
+          <Pencil />
+          Edit Issue
+        </DropdownMenuItem>
+      )}
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -219,6 +228,20 @@ const EditIssue = ({ issue, onSuccess }: EditIssueProps) => {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Due date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

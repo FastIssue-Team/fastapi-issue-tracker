@@ -1,11 +1,15 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Pencil } from "lucide-react"
 import { Suspense, useState } from "react"
 
 import { IssuesService, UsersService } from "@/client"
 import CommentSection from "@/components/Issues/CommentSection"
+import EditIssue from "@/components/Issues/EditIssue"
 import {
+  DUE_DATE_URGENCY_CLASS,
+  formatDueDate,
+  getDueDateUrgency,
   ISSUE_STATUSES,
   priorityLabel,
   STATUS_BADGE_VARIANT,
@@ -30,7 +34,7 @@ export const Route = createFileRoute("/_layout/issues/$issueId")({
   head: () => ({
     meta: [
       {
-        title: "Issue - FastAPI Template",
+        title: "Issue - Easy Tracker",
       },
     ],
   }),
@@ -72,10 +76,11 @@ function AssigneeEditor({ issueId }: { issueId: string }) {
   })
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       <Input
         placeholder="Assignee email (blank to unassign)"
         type="email"
+        className="min-w-0 flex-1"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -129,7 +134,21 @@ function IssueDetailContent({ issueId }: { issueId: string }) {
               ` on ${new Date(issue.created_at).toLocaleDateString()}`}
           </p>
         </div>
-        {issue.is_owner && <ShareIssueDialog issueId={issueId} />}
+        {issue.is_owner && (
+          <div className="flex shrink-0 items-center gap-2">
+            <EditIssue
+              issue={issue}
+              onSuccess={() => {}}
+              trigger={
+                <Button variant="outline" size="sm">
+                  <Pencil className="size-4" />
+                  Edit
+                </Button>
+              }
+            />
+            <ShareIssueDialog issueId={issueId} />
+          </div>
+        )}
       </div>
 
       <p className="whitespace-pre-wrap text-sm">
@@ -175,7 +194,20 @@ function IssueDetailContent({ issueId }: { issueId: string }) {
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 sm:col-span-2">
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium">Due date</span>
+          <span
+            className={
+              DUE_DATE_URGENCY_CLASS[
+                getDueDateUrgency(issue.due_date, issue.status)
+              ]
+            }
+          >
+            {formatDueDate(issue.due_date)}
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-2">
           <span className="text-sm font-medium">Assignee</span>
           {issue.can_edit_assignee ? (
             <AssigneeEditor issueId={issueId} />

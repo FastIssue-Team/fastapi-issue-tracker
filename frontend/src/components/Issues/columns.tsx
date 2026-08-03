@@ -3,12 +3,20 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Check, Copy } from "lucide-react"
 
 import type { IssuePublic } from "@/client"
+import { SortableHeader } from "@/components/Common/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard"
 import useAuth from "@/hooks/useAuth"
 import { IssueActionsMenu } from "./IssueActionsMenu"
-import { priorityLabel, STATUS_BADGE_VARIANT } from "./issueDisplay"
+import {
+  DUE_DATE_URGENCY_CLASS,
+  formatDueDate,
+  getDueDateUrgency,
+  priorityBadgeClass,
+  priorityLabel,
+  STATUS_BADGE_VARIANT,
+} from "./issueDisplay"
 
 function CopyId({ id }: { id: string }) {
   const [copiedText, copy] = useCopyToClipboard()
@@ -45,15 +53,25 @@ function IssueRowActions({ issue }: { issue: IssuePublic }) {
   return <IssueActionsMenu issue={issue} />
 }
 
+function compareNullableStrings(a: string | null, b: string | null): number {
+  if (a === b) return 0
+  if (a === null) return 1
+  if (b === null) return -1
+  return a.localeCompare(b)
+}
+
 export const columns: ColumnDef<IssuePublic>[] = [
   {
     accessorKey: "id",
     header: "ID",
+    enableSorting: false,
     cell: ({ row }) => <CopyId id={row.original.id} />,
   },
   {
     accessorKey: "title",
-    header: "Title",
+    header: ({ column }) => (
+      <SortableHeader column={column}>Title</SortableHeader>
+    ),
     cell: ({ row }) => (
       <Link
         to="/issues/$issueId"
@@ -66,7 +84,9 @@ export const columns: ColumnDef<IssuePublic>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => (
+      <SortableHeader column={column}>Status</SortableHeader>
+    ),
     cell: ({ row }) => {
       const status = row.original.status ?? "Open"
       return <Badge variant={STATUS_BADGE_VARIANT[status]}>{status}</Badge>
@@ -74,16 +94,48 @@ export const columns: ColumnDef<IssuePublic>[] = [
   },
   {
     accessorKey: "priority",
-    header: "Priority",
-    cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground">
-        {priorityLabel(row.original.priority ?? 3)}
-      </span>
+    header: ({ column }) => (
+      <SortableHeader column={column}>Priority</SortableHeader>
     ),
+    cell: ({ row }) => {
+      const priority = row.original.priority ?? 3
+      return (
+        <Badge className={priorityBadgeClass(priority)}>
+          {priorityLabel(priority)}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: "due_date",
+    header: ({ column }) => (
+      <SortableHeader column={column}>Due date</SortableHeader>
+    ),
+    sortingFn: (rowA, rowB) =>
+      compareNullableStrings(
+        rowA.original.due_date ?? null,
+        rowB.original.due_date ?? null,
+      ),
+    cell: ({ row }) => {
+      const issue = row.original
+      const urgency = getDueDateUrgency(issue.due_date, issue.status)
+      return (
+        <span className={`text-sm ${DUE_DATE_URGENCY_CLASS[urgency]}`}>
+          {formatDueDate(issue.due_date)}
+        </span>
+      )
+    },
   },
   {
     accessorKey: "assignee_email",
-    header: "Assignee",
+    header: ({ column }) => (
+      <SortableHeader column={column}>Assignee</SortableHeader>
+    ),
+    sortingFn: (rowA, rowB) =>
+      compareNullableStrings(
+        rowA.original.assignee_email ?? null,
+        rowB.original.assignee_email ?? null,
+      ),
     cell: ({ row }) => {
       const email = row.original.assignee_email
       return (
@@ -100,6 +152,7 @@ export const columns: ColumnDef<IssuePublic>[] = [
   {
     id: "actions",
     header: () => <span className="sr-only">Actions</span>,
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
         <IssueRowActions issue={row.original} />

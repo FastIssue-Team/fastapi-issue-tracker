@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { Search } from "lucide-react"
+import { LayoutGrid, List, Search } from "lucide-react"
 import { Suspense } from "react"
 import { z } from "zod"
 
@@ -9,7 +9,9 @@ import { DataTable } from "@/components/Common/DataTable"
 import AddIssue from "@/components/Issues/AddIssue"
 import { columns } from "@/components/Issues/columns"
 import { ISSUE_STATUSES, priorityLabel } from "@/components/Issues/issueDisplay"
+import KanbanBoard from "@/components/Issues/KanbanBoard"
 import PendingIssues from "@/components/Pending/PendingIssues"
+import PendingKanban from "@/components/Pending/PendingKanban"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -26,6 +28,7 @@ const searchSchema = z.object({
   status: z.enum(["Open", "In Progress", "Done"]).optional().catch(undefined),
   priority: z.coerce.number().int().min(1).max(5).optional().catch(undefined),
   assignedToMe: z.boolean().optional().catch(undefined),
+  view: z.enum(["list", "board"]).optional().catch(undefined),
 })
 
 type IssuesSearch = z.infer<typeof searchSchema>
@@ -36,7 +39,7 @@ export const Route = createFileRoute("/_layout/issues/")({
   head: () => ({
     meta: [
       {
-        title: "Issues - FastAPI Template",
+        title: "Issues - Easy Tracker",
       },
     ],
   }),
@@ -48,7 +51,7 @@ function getIssuesQueryOptions(search: IssuesSearch, assigneeId?: string) {
       IssuesService.readIssues({
         skip: 0,
         limit: 100,
-        status: search.status,
+        status: search.view === "board" ? undefined : search.status,
         priority: search.priority,
         assigneeId: search.assignedToMe ? assigneeId : undefined,
       }),
@@ -56,34 +59,73 @@ function getIssuesQueryOptions(search: IssuesSearch, assigneeId?: string) {
   }
 }
 
-function IssueFilters({ search }: { search: IssuesSearch }) {
+function ViewToggle({ search }: { search: IssuesSearch }) {
   const navigate = useNavigate({ from: Route.fullPath })
+  const view = search.view ?? "list"
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <Select
-        value={search.status ?? ALL_VALUE}
-        onValueChange={(value) =>
+    <div className="flex items-center gap-1 rounded-md border p-1">
+      <Button
+        variant={view === "list" ? "secondary" : "ghost"}
+        size="sm"
+        aria-pressed={view === "list"}
+        onClick={() =>
           navigate({
-            search: (prev: IssuesSearch) => ({
-              ...prev,
-              status: value === ALL_VALUE ? undefined : (value as IssuesSearch["status"]),
-            }),
+            search: (prev: IssuesSearch) => ({ ...prev, view: "list" }),
           })
         }
       >
-        <SelectTrigger className="w-[160px]" aria-label="Filter by status">
-          <SelectValue placeholder="All statuses" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_VALUE}>All statuses</SelectItem>
-          {ISSUE_STATUSES.map((status) => (
-            <SelectItem key={status} value={status}>
-              {status}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <List className="size-4" />
+        List
+      </Button>
+      <Button
+        variant={view === "board" ? "secondary" : "ghost"}
+        size="sm"
+        aria-pressed={view === "board"}
+        onClick={() =>
+          navigate({
+            search: (prev: IssuesSearch) => ({ ...prev, view: "board" }),
+          })
+        }
+      >
+        <LayoutGrid className="size-4" />
+        Board
+      </Button>
+    </div>
+  )
+}
+
+function IssueFilters({ search }: { search: IssuesSearch }) {
+  const navigate = useNavigate({ from: Route.fullPath })
+  const isBoardView = search.view === "board"
+
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      {!isBoardView && (
+        <Select
+          value={search.status ?? ALL_VALUE}
+          onValueChange={(value) =>
+            navigate({
+              search: (prev: IssuesSearch) => ({
+                ...prev,
+                status: value === ALL_VALUE ? undefined : (value as IssuesSearch["status"]),
+              }),
+            })
+          }
+        >
+          <SelectTrigger className="w-[160px]" aria-label="Filter by status">
+            <SelectValue placeholder="All statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_VALUE}>All statuses</SelectItem>
+            {ISSUE_STATUSES.map((status) => (
+              <SelectItem key={status} value={status}>
+                {status}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Select
         value={search.priority ? String(search.priority) : ALL_VALUE}
@@ -126,7 +168,7 @@ function IssueFilters({ search }: { search: IssuesSearch }) {
   )
 }
 
-function IssuesTableContent({ search }: { search: IssuesSearch }) {
+function IssuesViewContent({ search }: { search: IssuesSearch }) {
   const { user } = useAuth()
   const { data: issues } = useSuspenseQuery(
     getIssuesQueryOptions(search, user?.id),
@@ -148,13 +190,19 @@ function IssuesTableContent({ search }: { search: IssuesSearch }) {
     )
   }
 
+  if (search.view === "board") {
+    return <KanbanBoard issues={issues.data} />
+  }
+
   return <DataTable columns={columns} data={issues.data} />
 }
 
-function IssuesTable({ search }: { search: IssuesSearch }) {
+function IssuesView({ search }: { search: IssuesSearch }) {
+  const fallback = search.view === "board" ? <PendingKanban /> : <PendingIssues />
+
   return (
-    <Suspense fallback={<PendingIssues />}>
-      <IssuesTableContent search={search} />
+    <Suspense fallback={fallback}>
+      <IssuesViewContent search={search} />
     </Suspense>
   )
 }
@@ -173,8 +221,11 @@ function Issues() {
         </div>
         <AddIssue />
       </div>
-      <IssueFilters search={search} />
-      <IssuesTable search={search} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <IssueFilters search={search} />
+        <ViewToggle search={search} />
+      </div>
+      <IssuesView search={search} />
     </div>
   )
 }

@@ -1,16 +1,23 @@
 import {
+  type Column,
   type ColumnDef,
+  type SortingState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -34,15 +41,48 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
+export function SortableHeader<TData, TValue>({
+  column,
+  children,
+}: {
+  column: Column<TData, TValue>
+  children: React.ReactNode
+}) {
+  const sorted = column.getIsSorted()
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="-ml-3 h-8"
+      onClick={() => column.toggleSorting(sorted === "asc")}
+    >
+      {children}
+      {sorted === "asc" ? (
+        <ArrowUp className="size-3.5" />
+      ) : sorted === "desc" ? (
+        <ArrowDown className="size-3.5" />
+      ) : (
+        <ArrowUpDown className="size-3.5 text-muted-foreground/50" />
+      )}
+    </Button>
+  )
+}
+
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([])
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: { sorting },
   })
 
   return (
