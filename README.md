@@ -8,24 +8,38 @@
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Live Demo](https://img.shields.io/badge/demo-live-blueviolet?logo=railway&logoColor=white)](https://frontend-production-3125.up.railway.app)
 
-Easy Tracker is a full-stack issue and task management application designed to make team collaboration simple, transparent, and efficient. It combines the practical workflow of a lightweight issue tracker with the architecture and developer experience of the official Full Stack FastAPI Template.
+# Easy Tracker
 
-The project is a modern successor to a Flask-based issue tracker, rebuilt with a FastAPI backend, a React frontend, typed APIs end-to-end, role-aware collaboration, automated testing, and containerized deployment.
+Easy Tracker is an open-source issue-tracking application built with FastAPI, React, PostgreSQL, and Docker.
+
+The project is a modernized version of an earlier Flask-based issue tracker. It provides authentication, issue management, assignment, sharing, comments, progress tracking, and role-based access in a typed full-stack architecture.
+
+Repository: https://github.com/FastIssue-Team/fastapi-issue-tracker
 
 ## Project Status
 
-Current repository status:
+The main full-stack foundation and most of the original issue-tracking functionality have been migrated successfully.
 
-- [x] Project scope and technical direction defined
-- [x] Reference applications selected
-- [x] Full-stack project scaffold (FastAPI + React + PostgreSQL, Docker Compose)
-- [x] Authentication and user management
-- [x] Issue management API
-- [x] React user interface
-- [x] Sharing, permissions, and comments
-- [x] Automated tests (backend Pytest, end-to-end Playwright) and CI
-- [x] Deployed to Railway
-- [ ] Issue progress percentage / activity history (see [Roadmap](#roadmap))
+Completed work includes:
+
+- [x] FastAPI backend
+- [x] React frontend
+- [x] PostgreSQL database
+- [x] SQLModel and Alembic migrations
+- [x] Docker Compose development environment
+- [x] User authentication and account management
+- [x] Issue creation, viewing, editing, and deletion
+- [x] Issue status and priority
+- [x] Issue assignment
+- [x] Issue sharing and permissions
+- [x] Issue comments
+- [x] Issue progress tracking
+- [x] Backend automated tests
+- [x] Playwright end-to-end tests
+- [x] Pre-commit checks
+- [x] GitHub Actions continuous integration
+
+The repository is runnable from the `main` branch, and the core issue-management workflow functions end to end.
 
 ## Why Easy Tracker?
 
@@ -42,30 +56,39 @@ Many issue trackers are either too limited for team collaboration or too complex
 
 ### Authentication and users
 
-- User registration, sign-in, and sign-out
+- User registration
+- User sign-in and sign-out
 - Secure password hashing
 - JWT-based authentication
-- Profile and password management
-- Password recovery by email
+- User profile management
 - Administrator and regular-user roles
 
 ### Issue management
 
 - Create, view, edit, and delete issues
-- Rich issue descriptions
-- Configurable status (`Open`, `In Progress`, `Done`) and priority (1–5)
-- Assign issues to team members, looked up by email
-- Track issue owners and assignees
-- Creation and update timestamps
-- Filter the issue list by status, priority, and assignee
+- Set issue status
+- Set issue priority
+- Assign issues to users
+- Track issue progress
+- View issue creation and update information
 
-### Collaboration and permissions
+### Collaboration
 
-- Share issues with other users by email
-- Fine-grained permissions for shared issues (`can_edit_status`, `can_edit_assignee`)
-- Owner-only sharing and revocation
-- Add comments to issue discussions
-- Record comment authors and timestamps
+- Share issues with other users
+- Control issue access through backend permission rules
+- Add comments to issues
+- Assign responsibility for an issue
+- Allow authorized users to update issue information
+
+### Development and quality
+
+- Docker-based local development
+- PostgreSQL database persistence
+- Alembic database migrations
+- Backend automated tests
+- Playwright end-to-end tests
+- Pre-commit formatting and quality checks
+- GitHub Actions continuous integration
 
 ### User experience
 
@@ -90,48 +113,43 @@ Many issue trackers are either too limited for team collaboration or too complex
 
 ## Technology Stack
 
-| Layer            | Technology                      |
-| ---------------- | -------------------------------- |
-| Backend API      | FastAPI, Python 3.14             |
-| Package manager  | uv (backend), bun (frontend)     |
-| Validation       | Pydantic                         |
-| ORM              | SQLModel                         |
-| Database         | PostgreSQL                       |
-| Migrations       | Alembic                          |
-| Authentication   | JWT and secure password hashing  |
-| Frontend         | React, TypeScript, Vite          |
-| UI               | Tailwind CSS, shadcn/ui          |
-| API client       | Generated from OpenAPI (hey-api) |
-| Backend tests    | Pytest                           |
-| End-to-end tests | Playwright                       |
-| Containers       | Docker, Docker Compose           |
-| CI/CD            | GitHub Actions                   |
-| Reverse proxy    | Traefik                          |
-| Hosting          | Railway                          |
+### Backend
+
+- FastAPI
+- Python
+- SQLModel
+- PostgreSQL
+- Alembic
+- Pydantic
+- JWT authentication
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- Generated API client
+
+### Development and testing
+
+- Docker
+- Docker Compose
+- Pytest
+- Playwright
+- Pre-commit
+- GitHub Actions
 
 ## Architecture
 
-```text
-Browser
-   |
-   v
-React + TypeScript frontend
-   |
-   | Generated typed API client
-   v
-FastAPI REST API (/api/v1)
-   |
-   +-- Authentication and authorization
-   +-- Issue and comment routes
-   +-- Sharing and permission rules (app/core/permissions.py)
-   |
-   v
-SQLModel / Alembic
-   |
-   v
-PostgreSQL
-```
+Easy Tracker uses a separated full-stack architecture:
 
+- The FastAPI backend provides authentication, issue-management APIs, authorization rules, and database access.
+- The React frontend provides the user interface for authentication, issue management, collaboration, and progress tracking.
+- PostgreSQL stores users, issues, comments, sharing relationships, and related application data.
+- SQLModel defines typed database models and API schemas.
+- Alembic manages database schema migrations.
+- Docker Compose provides a consistent local development environment.
+- GitHub Actions runs automated quality checks and tests.
 The backend exposes a versioned REST API and is responsible for authentication, authorization, validation, and business rules. The frontend consumes the generated OpenAPI client so request and response types stay synchronized with the API. Access control (owner vs. shared vs. superuser) is centralized in `backend/app/core/permissions.py` and enforced on every issue, comment, and share route.
 
 ## Core Domain Model
@@ -149,17 +167,18 @@ The backend exposes a versioned REST API and is responsible for authentication, 
 
 ### Issue
 
-| Field         | Description                                     |
-| ------------- | ------------------------------------------------ |
-| `id`          | Unique issue identifier                          |
-| `title`       | Short issue summary                              |
-| `description` | Detailed issue content                           |
-| `status`      | Current workflow state (`Open`/`In Progress`/`Done`) |
-| `priority`    | Relative urgency, 1 (highest) to 5 (lowest)      |
-| `owner_id`    | User who owns the issue                          |
-| `assignee_id` | User responsible for the issue (nullable)        |
-| `created_at`  | Creation timestamp                               |
-| `updated_at`  | Last update timestamp                            |
+| Field | Description |
+| --- | --- |
+| `id` | Unique issue identifier |
+| `title` | Short issue title |
+| `description` | Detailed issue description |
+| `status` | Current issue workflow status |
+| `priority` | Issue urgency or importance |
+| `progress` | Current completion percentage |
+| `owner_id` | User who created or owns the issue |
+| `assignee_id` | User assigned to the issue |
+| `created_at` | Issue creation timestamp |
+| `updated_at` | Most recent update timestamp |
 
 ### Comment
 
@@ -403,6 +422,18 @@ Easy Tracker draws inspiration from:
 - [OmarMashal0/issue-tracker](https://github.com/OmarMashal0/issue-tracker) — lightweight issue tracking, sharing, permissions, and comments
 
 Easy Tracker is an independent implementation. Referenced projects remain subject to their respective licenses.
+
+## Attribution
+
+Easy Tracker was migrated from an earlier Flask-based issue tracker and uses components adapted from the Full Stack FastAPI Template.
+
+Relevant third-party license and attribution information is available in:
+
+- `THIRD_PARTY_NOTICES.md`
+- the `licenses/` directory
+- the repository's main license file
+
+All imported and adapted code must retain the applicable upstream license notices.
 
 ## License
 
