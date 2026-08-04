@@ -42,6 +42,7 @@ const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
   priority: z.enum(["1", "2", "3", "4", "5"]),
+  dueDate: z.string().optional(),
   assigneeEmail: z
     .union([z.literal(""), z.string().email({ message: "Enter a valid email" })])
     .optional(),
@@ -62,6 +63,7 @@ const AddIssue = () => {
       title: "",
       description: "",
       priority: "3",
+      dueDate: "",
       assigneeEmail: "",
     },
   })
@@ -80,6 +82,7 @@ const AddIssue = () => {
           title: data.title,
           description: data.description || undefined,
           priority: Number(data.priority),
+          due_date: data.dueDate || undefined,
           assignee_id,
         },
       })
@@ -152,33 +155,49 @@ const AddIssue = () => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="priority"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Priority</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="priority"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Priority</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select priority" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5].map((priority) => (
+                            <SelectItem key={priority} value={String(priority)}>
+                              {priorityLabel(priority)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="dueDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Due date</FormLabel>
                       <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select priority" />
-                        </SelectTrigger>
+                        <Input type="date" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {[1, 2, 3, 4, 5].map((priority) => (
-                          <SelectItem key={priority} value={String(priority)}>
-                            {priorityLabel(priority)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
