@@ -11,17 +11,21 @@ import { ApiError, OpenAPI } from "./client"
 import { ThemeProvider } from "./components/theme-provider"
 import { Toaster } from "./components/ui/sonner"
 import "./index.css"
+import { getActiveToken, handleInvalidActiveAccount } from "./lib/accounts"
 import { routeTree } from "./routeTree.gen"
 
 OpenAPI.BASE = import.meta.env.VITE_API_URL
 OpenAPI.TOKEN = async () => {
-  return localStorage.getItem("access_token") || ""
+  return getActiveToken()
 }
 
 const handleApiError = (error: Error) => {
   if (error instanceof ApiError && [401, 403].includes(error.status)) {
-    localStorage.removeItem("access_token")
-    window.location.href = "/login"
+    // The active account's token is invalid/expired: drop it and fall back
+    // to another stored account if one exists, otherwise go to /login. The
+    // full page navigation below already discards the in-memory query cache.
+    const result = handleInvalidActiveAccount()
+    window.location.href = result === "switched" ? "/" : "/login"
   }
 }
 const queryClient = new QueryClient({

@@ -12,6 +12,10 @@ on:
         required: false
         default: 'false'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions: {}
 
 jobs:
@@ -79,7 +83,12 @@ jobs:
     - run: docker compose build
     - run: docker compose down -v --remove-orphans
     - name: Run Playwright tests
-      run: docker compose run --rm playwright bunx playwright test --fail-on-flaky-tests --trace=retain-on-failure --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      # Pass the matrix values through env vars instead of interpolating them
+      # directly into the run script.
+      env:
+        SHARD_INDEX: ${{ matrix.shardIndex }}
+        SHARD_TOTAL: ${{ matrix.shardTotal }}
+      run: docker compose run --rm playwright bunx playwright test --fail-on-flaky-tests --trace=retain-on-failure --shard=$SHARD_INDEX/$SHARD_TOTAL
     - run: docker compose down -v --remove-orphans
     - name: Upload blob report to GitHub Actions Artifacts
       if: ${{ !cancelled() }}

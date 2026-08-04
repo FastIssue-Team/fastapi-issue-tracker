@@ -29,3 +29,26 @@ export const getInitials = (name: string): string => {
     .join("")
     .toUpperCase()
 }
+
+// Picks black or white text so it stays readable on top of any arbitrary
+// user-chosen background color (used for the custom account label badges).
+export const getReadableTextColor = (hex: string): string => {
+  const normalized = hex.replace("#", "")
+  const full =
+    normalized.length === 3
+      ? normalized
+          .split("")
+          .map((char) => char + char)
+          .join("")
+      : normalized
+
+  const r = Number.parseInt(full.slice(0, 2), 16)
+  const g = Number.parseInt(full.slice(2, 4), 16)
+  const b = Number.parseInt(full.slice(4, 6), 16)
+  if ([r, g, b].some((value) => Number.isNaN(value))) {
+    return "#ffffff"
+  }
+
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.6 ? "#1f2937" : "#ffffff"
+}

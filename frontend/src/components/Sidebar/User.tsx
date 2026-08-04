@@ -1,12 +1,17 @@
 import { Link as RouterLink } from "@tanstack/react-router"
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react"
+import { ChevronsUpDown, LogOut, Settings, UserPlus } from "lucide-react"
+import { useEffect, useState } from "react"
 
+import { AccountLabelBadge } from "@/components/UserSettings/AccountLabelBadge"
+import { AddAccountDialog } from "@/components/UserSettings/AddAccountDialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -17,6 +22,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import useAuth from "@/hooks/useAuth"
+import { getAccounts, getActiveAccountId, type StoredAccount } from "@/lib/accounts"
 import { getInitials } from "@/utils"
 
 interface UserInfoProps {
@@ -41,10 +47,20 @@ function UserInfo({ fullName, email }: UserInfoProps) {
 }
 
 export function User({ user }: { user: any }) {
-  const { logout } = useAuth()
+  const { logout, switchAccount } = useAuth()
   const { isMobile, setOpenMobile } = useSidebar()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [accounts, setAccounts] = useState<StoredAccount[]>([])
+
+  const refreshAccounts = () => setAccounts(getAccounts())
+
+  useEffect(() => {
+    refreshAccounts()
+  }, [])
 
   if (!user) return null
+
+  const activeAccountId = getActiveAccountId()
 
   const handleMenuClick = () => {
     if (isMobile) {
@@ -58,7 +74,13 @@ export function User({ user }: { user: any }) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu
+          open={menuOpen}
+          onOpenChange={(next) => {
+            setMenuOpen(next)
+            if (next) refreshAccounts()
+          }}
+        >
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -70,7 +92,7 @@ export function User({ user }: { user: any }) {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-64 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -78,7 +100,49 @@ export function User({ user }: { user: any }) {
             <DropdownMenuLabel className="p-0 font-normal">
               <UserInfo fullName={user?.full_name} email={user?.email} />
             </DropdownMenuLabel>
+
+            {accounts.length > 1 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>切换账号</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={activeAccountId ?? undefined}
+                  onValueChange={(id) => {
+                    handleMenuClick()
+                    switchAccount(id)
+                  }}
+                >
+                  {accounts.map((account) => (
+                    <DropdownMenuRadioItem key={account.id} value={account.id}>
+                      <div className="flex w-full items-center justify-between gap-2">
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate text-sm">
+                            {account.fullName || account.email || "未命名账号"}
+                          </span>
+                          {account.email && (
+                            <span className="truncate text-xs text-muted-foreground">
+                              {account.email}
+                            </span>
+                          )}
+                        </div>
+                        <AccountLabelBadge label={account.label} />
+                      </div>
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </>
+            )}
+
             <DropdownMenuSeparator />
+            <AddAccountDialog
+              onAdded={refreshAccounts}
+              trigger={
+                <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+                  <UserPlus />
+                  添加账号
+                </DropdownMenuItem>
+              }
+            />
             <RouterLink to="/settings" onClick={handleMenuClick}>
               <DropdownMenuItem>
                 <Settings />
