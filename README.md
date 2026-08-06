@@ -1,6 +1,6 @@
 # Easy Tracker
 
-> A modern, open-source issue tracker for individuals and small teams, built with FastAPI and React.
+> A modern, open-source issue tracker with collaboration, due-date calendars, and multi-account switching, built with FastAPI and React.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Project Status](https://img.shields.io/badge/status-active%20development-brightgreen.svg)](#project-status)
@@ -8,17 +8,15 @@
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Live Demo](https://img.shields.io/badge/demo-live-blueviolet?logo=railway&logoColor=white)](https://frontend-production-3125.up.railway.app)
 
-# Easy Tracker
-
 Easy Tracker is an open-source issue-tracking application built with FastAPI, React, PostgreSQL, and Docker.
 
-The project is a modernized version of an earlier Flask-based issue tracker. It provides authentication, issue management, assignment, sharing, comments, progress tracking, and role-based access in a typed full-stack architecture.
+The project is a modernized version of an earlier Flask-based issue tracker. It provides authentication, issue management, assignment, sharing, comments, progress tracking, due-date calendar views, and fast multi-account switching in a typed full-stack architecture.
 
 Repository: https://github.com/FastIssue-Team/fastapi-issue-tracker
 
 ## Project Status
 
-The main full-stack foundation and most of the original issue-tracking functionality have been migrated successfully.
+The main full-stack foundation, core issue-tracking workflow, due-date calendar, and multi-account switching features have been completed.
 
 Completed work includes:
 
@@ -29,17 +27,25 @@ Completed work includes:
 - [x] Docker Compose development environment
 - [x] User authentication and account management
 - [x] Issue creation, viewing, editing, and deletion
-- [x] Issue status and priority
+- [x] Issue status, priority, and progress tracking
 - [x] Issue assignment
 - [x] Issue sharing and permissions
 - [x] Issue comments
-- [x] Issue progress tracking
+- [x] Optional issue due dates
+- [x] Dashboard calendar
+- [x] Display issues on their corresponding deadline dates
+- [x] Save multiple Easy Tracker accounts
+- [x] Fast switching between saved accounts
+- [x] Predefined and custom account tags
+- [x] Account color customization
+- [x] Active-account identification
 - [x] Backend automated tests
 - [x] Playwright end-to-end tests
 - [x] Pre-commit checks
 - [x] GitHub Actions continuous integration
+- [x] Production deployment on Railway
 
-The repository is runnable from the `main` branch, and the core issue-management workflow functions end to end.
+The repository is runnable from the `main` branch, and the main issue-management, calendar, and account-switching workflows function end to end.
 
 ## Why Easy Tracker?
 
@@ -51,6 +57,20 @@ Many issue trackers are either too limited for team collaboration or too complex
 - Easy to run locally with Docker
 - Fully typed from database models to frontend API calls
 - Extensible for future integrations and automation
+
+## Major Additions by the FastIssue Team
+
+The FastIssue Team extended the migrated issue tracker with two major user-facing features:
+
+### Due-date calendar
+
+Issues can now include optional due dates and appear on a dashboard calendar on their corresponding deadline dates. The calendar reuses the existing issue visibility and permission model so users only see issues they are authorized to access.
+
+### Multi-account switching
+
+Users can save and quickly switch between multiple Easy Tracker accounts without repeatedly completing the full logout and login workflow. Saved accounts can be labeled with predefined or custom tags and assigned distinct colors for easier identification.
+
+The team also improved the user interface, documentation, deployment workflow, automated testing, and open-source attribution.
 
 ## Features
 
@@ -71,6 +91,27 @@ Many issue trackers are either too limited for team collaboration or too complex
 - Assign issues to users
 - Track issue progress
 - View issue creation and update information
+
+### Calendar and due dates
+
+- Add an optional due date to an issue
+- Edit or clear an existing due date
+- View issues with deadlines on the dashboard calendar
+- Display each issue on its corresponding deadline date
+- Navigate between calendar date ranges
+- Apply existing issue visibility and permission rules to calendar results
+- Refresh calendar data after issue updates
+
+### Multi-account switching
+
+- Save multiple Easy Tracker accounts
+- Switch between saved accounts without repeating the full logout and login process
+- Assign predefined tags such as `Work`, `Personal`, or `School`
+- Create custom account tags
+- Assign a distinct color to each saved account
+- Clearly indicate the currently active account
+- Edit or remove saved account profiles
+- Reload account-specific issue, calendar, permission, and profile data after switching
 
 ### Collaboration
 
@@ -94,7 +135,10 @@ Many issue trackers are either too limited for team collaboration or too complex
 
 - Responsive web interface
 - Issue list with filters and an issue detail view
-- Clear status and priority indicators
+- Dashboard calendar for deadline-based issues
+- Fast multi-account switcher
+- Account tags, colors, and active-account indicators
+- Clear status, priority, progress, and due-date information
 - Inline editing of status and assignee (permission-aware)
 - Light and dark themes
 - Accessible, reusable UI components (shadcn/ui)
@@ -150,6 +194,8 @@ Easy Tracker uses a separated full-stack architecture:
 - Alembic manages database schema migrations.
 - Docker Compose provides a consistent local development environment.
 - GitHub Actions runs automated quality checks and tests.
+- The calendar workflow uses issue due dates and existing permission rules to display only issues visible to the active user.
+- The multi-account workflow stores account-specific session metadata and refreshes protected application data whenever the active account changes.
 The backend exposes a versioned REST API and is responsible for authentication, authorization, validation, and business rules. The frontend consumes the generated OpenAPI client so request and response types stay synchronized with the API. Access control (owner vs. shared vs. superuser) is centralized in `backend/app/core/permissions.py` and enforced on every issue, comment, and share route.
 
 ## Core Domain Model
@@ -177,8 +223,10 @@ The backend exposes a versioned REST API and is responsible for authentication, 
 | `progress` | Current completion percentage |
 | `owner_id` | User who created or owns the issue |
 | `assignee_id` | User assigned to the issue |
+| `due_date` | Optional issue deadline used by the dashboard calendar |
 | `created_at` | Issue creation timestamp |
 | `updated_at` | Most recent update timestamp |
+
 
 ### Comment
 
@@ -206,8 +254,8 @@ Deleting an issue cascades to its comments and shares; deleting a user cascades 
 
 The full API is documented automatically through OpenAPI at `/docs` (Swagger UI) and `/redoc` (ReDoc). Key resources:
 
-| Method   | Path                                   | Purpose                                             |
-| -------- | --------------------------------------- | ---------------------------------------------------- |
+| Method   | Path                                   | Purpose                                              |
+| -------- | --------------------------------------- | --------------------------------------------------- |
 | `POST`   | `/api/v1/login/access-token`           | Authenticate a user                                  |
 | `POST`   | `/api/v1/users/signup`                 | Register a new account                               |
 | `GET`    | `/api/v1/users/me`                     | Get the current user                                 |
@@ -222,6 +270,8 @@ The full API is documented automatically through OpenAPI at `/docs` (Swagger UI)
 | `GET`    | `/api/v1/issues/{id}/shares`           | List who an issue is shared with (owner only)        |
 | `POST`   | `/api/v1/issues/{id}/shares`           | Share an issue by email (owner only)                 |
 | `DELETE` | `/api/v1/issues/{id}/shares/{user_id}` | Revoke shared access (owner only)                    |
+| `GET`    | `/api/v1/issues/calendar`              | List visible issues within a requested date range    |
+The dashboard calendar uses issue due-date data returned by the issue API and applies the same ownership, sharing, and permission rules as the issue list.
 
 ## Repository Layout
 
@@ -238,7 +288,7 @@ fastapi-issue-tracker/
 ├── frontend/                # React + TypeScript application
 │   ├── src/
 │   │   ├── client/          # generated OpenAPI client (types + SDK)
-│   │   ├── components/      # Issues, Pending, Sidebar, ui, etc.
+│   │   ├── components/      # Issues, calendar, account switcher, sidebar, and reusable UI
 │   │   └── routes/          # TanStack Router file-based routes
 │   └── tests/                # Playwright end-to-end tests
 ├── scripts/                  # Repo-wide dev/test/deploy helpers
@@ -384,7 +434,7 @@ bash scripts/prestart.sh && fastapi run --workers 4
 
 - Implement authentication and user management
 - Implement issue CRUD operations
-- Add status, priority, and assignee fields
+- Add status, priority, progress, and assignee fields
 - Build list, create, edit, and detail pages
 
 ### Phase 3 — Collaboration ✅
@@ -393,12 +443,30 @@ bash scripts/prestart.sh && fastapi run --workers 4
 - Add issue sharing and fine-grained permissions
 - Add filtering by status, priority, and assignee
 
-### Phase 4 — Quality and release (in progress)
+### Phase 4 — Due dates and calendar ✅
 
-- Issue progress percentage and activity history
+- Add optional due dates to issues
+- Add due-date controls to issue forms
+- Display deadline-based issues on the dashboard calendar
+- Show issues on their corresponding deadline dates
+- Apply visibility and permission rules to calendar data
+
+### Phase 5 — Multi-account switching ✅
+
+- Save multiple Easy Tracker accounts
+- Switch between saved accounts
+- Add predefined and custom account tags
+- Assign account colors
+- Clearly indicate the active account
+- Reload account-specific issue and calendar data after switching
+
+### Phase 6 — Quality and future improvements
+
 - Expand accessibility and responsive-behavior coverage
-- Search and sorting for the issue list
-- Pagination controls in the UI (API already supports `skip`/`limit`)
+- Improve search and sorting for the issue list
+- Add pagination controls to the UI
+- Expand automated test coverage
+- Improve documentation and demonstration materials
 
 Possible future additions include labels, attachments, notifications, project boards, audit logs, and third-party integrations. They are not part of the current release unless added to the roadmap above.
 
@@ -411,6 +479,8 @@ Contributions are welcome. Before submitting a change:
 3. Add tests for new or changed behavior.
 4. Run the relevant checks locally (`uv run pytest`, `bun run test`, `uv run prek run --all-files`).
 5. Submit a pull request with a clear description and screenshots for UI changes.
+6. For account-switching changes, verify that data from the previous account is cleared before loading the newly active account.
+7. Do not use color as the only way to identify an account or application state.
 
 Please keep architectural proposals and large feature additions in a discussion or issue before implementation so the team can agree on scope and design.
 
@@ -421,7 +491,7 @@ Easy Tracker draws inspiration from:
 - [Full Stack FastAPI Template](https://github.com/fastapi/full-stack-fastapi-template) — application architecture, tooling, testing, and deployment conventions
 - [OmarMashal0/issue-tracker](https://github.com/OmarMashal0/issue-tracker) — lightweight issue tracking, sharing, permissions, and comments
 
-Easy Tracker is an independent implementation. Referenced projects remain subject to their respective licenses.
+Easy Tracker builds on and adapts open-source project structures and ideas while adding substantial new implementation, features, and documentation. Referenced projects remain subject to their respective licenses.
 
 ## Attribution
 
