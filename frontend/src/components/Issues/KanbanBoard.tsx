@@ -127,6 +127,8 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
         return (
           <div
             key={status}
+            role="group"
+            aria-label={`${status} column`}
             onDragOver={(e) => {
               e.preventDefault()
               setDragOverStatus(status)

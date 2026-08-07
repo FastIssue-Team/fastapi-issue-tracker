@@ -145,7 +145,8 @@ const AccountsManager = () => {
   }
 
   useEffect(() => {
-    refresh()
+    setAccounts(getAccounts())
+    setActiveAccountIdState(getActiveAccountId())
   }, [])
 
   return (

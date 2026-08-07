@@ -55,7 +55,7 @@ export function User({ user }: { user: any }) {
   const refreshAccounts = () => setAccounts(getAccounts())
 
   useEffect(() => {
-    refreshAccounts()
+    setAccounts(getAccounts())
   }, [])
 
   if (!user) return null
