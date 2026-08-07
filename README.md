@@ -220,7 +220,6 @@ The backend exposes a versioned REST API and is responsible for authentication, 
 | `description` | Detailed issue description |
 | `status` | Current issue workflow status |
 | `priority` | Issue urgency or importance |
-| `progress` | Current completion percentage |
 | `owner_id` | User who created or owns the issue |
 | `assignee_id` | User assigned to the issue |
 | `due_date` | Optional issue deadline used by the dashboard calendar |

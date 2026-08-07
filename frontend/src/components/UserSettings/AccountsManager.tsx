@@ -37,25 +37,27 @@ function RemoveAccountDialog({
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          移除
+          Remove
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>移除账号</DialogTitle>
+          <DialogTitle>Remove account</DialogTitle>
           <DialogDescription>
-            将从本设备移除{" "}
-            <strong>{account.fullName || account.email || "该账号"}</strong>
-            。这只会清除本地保存的登录信息，不会删除该账号本身，随时可以重新登录添加回来。
+            This will remove{" "}
+            <strong>{account.fullName || account.email || "this account"}</strong>{" "}
+            from this device. It only clears the locally saved sign-in info; it
+            won't delete the account itself, and you can always sign back in to
+            add it again.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-2">
           <DialogClose asChild>
-            <Button variant="outline">取消</Button>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
             <Button variant="destructive" onClick={onConfirm}>
-              移除
+              Remove
             </Button>
           </DialogClose>
         </DialogFooter>
@@ -85,10 +87,10 @@ function AccountRow({
         </Avatar>
         <div className="flex min-w-0 flex-col">
           <span className="truncate text-sm font-medium">
-            {account.fullName || "未命名账号"}
+            {account.fullName || "Unnamed account"}
           </span>
           <span className="truncate text-xs text-muted-foreground">
-            {account.email || "邮箱未知"}
+            {account.email || "Unknown email"}
           </span>
         </div>
         <LabelEditorDialog
@@ -108,7 +110,7 @@ function AccountRow({
       <div className="flex items-center gap-2">
         {isActive ? (
           <span className="text-sm font-medium text-muted-foreground">
-            当前使用中
+            Currently active
           </span>
         ) : (
           <Button
@@ -116,7 +118,7 @@ function AccountRow({
             size="sm"
             onClick={() => switchAccount(account.id)}
           >
-            切换到此账号
+            Switch to this account
           </Button>
         )}
         <RemoveAccountDialog
@@ -143,21 +145,23 @@ const AccountsManager = () => {
   }
 
   useEffect(() => {
-    refresh()
+    setAccounts(getAccounts())
+    setActiveAccountIdState(getActiveAccountId())
   }, [])
 
   return (
     <div className="flex max-w-2xl flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">账户管理</h3>
+          <h3 className="text-lg font-semibold">Account management</h3>
           <p className="text-sm text-muted-foreground">
-            添加多个账号（比如公司号、个人号），随时切换，无需重新登录。
+            Add multiple accounts (e.g. work and personal) and switch between
+            them anytime, without signing in again.
           </p>
         </div>
         <AddAccountDialog
           onAdded={refresh}
-          trigger={<Button>添加账号</Button>}
+          trigger={<Button>Add account</Button>}
         />
       </div>
 
