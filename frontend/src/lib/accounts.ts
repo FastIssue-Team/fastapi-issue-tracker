@@ -21,12 +21,12 @@ export interface StoredAccount {
 }
 
 export const LABEL_COLOR_PRESETS: AccountLabel[] = [
-  { text: "公司", color: "#2563eb" },
-  { text: "个人", color: "#16a34a" },
-  { text: "工作", color: "#9333ea" },
-  { text: "客户", color: "#ea580c" },
-  { text: "测试", color: "#db2777" },
-  { text: "其他", color: "#64748b" },
+  { text: "Company", color: "#2563eb" },
+  { text: "Personal", color: "#16a34a" },
+  { text: "Work", color: "#9333ea" },
+  { text: "Client", color: "#ea580c" },
+  { text: "Test", color: "#db2777" },
+  { text: "Other", color: "#64748b" },
 ]
 
 function readAccounts(): StoredAccount[] {
@@ -54,7 +54,7 @@ function migrateLegacyToken(): StoredAccount[] {
     id: LEGACY_ACCOUNT_ID,
     token: legacyToken,
     email: "",
-    label: { text: "账号", color: "#64748b" },
+    label: { text: "Account", color: "#64748b" },
   }
   writeAccounts([migrated])
   localStorage.setItem(ACTIVE_ACCOUNT_KEY, LEGACY_ACCOUNT_ID)

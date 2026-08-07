@@ -63,7 +63,7 @@ export function AddAccountDialog({
     if (addAccountMutation.isPending) return
     addAccountMutation.mutate(data, {
       onSuccess: () => {
-        showSuccessToast("账号已添加，可以随时切换到该账号")
+        showSuccessToast("Account added. You can switch to it anytime")
         form.reset()
         setOpen(false)
         onAdded?.()
@@ -82,9 +82,10 @@ export function AddAccountDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>添加账号</DialogTitle>
+          <DialogTitle>Add account</DialogTitle>
           <DialogDescription>
-            登录另一个账号后会加入账号列表，不会切换当前正在使用的账号。
+            Signing in to another account adds it to your account list without
+            switching away from the one you're currently using.
           </DialogDescription>
         </DialogHeader>
 
@@ -98,7 +99,7 @@ export function AddAccountDialog({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>邮箱</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="user@example.com"
@@ -116,7 +117,7 @@ export function AddAccountDialog({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>密码</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <PasswordInput placeholder="Password" {...field} />
                   </FormControl>
@@ -130,7 +131,7 @@ export function AddAccountDialog({
                 type="submit"
                 loading={addAccountMutation.isPending}
               >
-                添加账号
+                Add account
               </LoadingButton>
             </DialogFooter>
           </form>

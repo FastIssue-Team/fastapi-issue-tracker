@@ -104,7 +104,7 @@ export function User({ user }: { user: any }) {
             {accounts.length > 1 && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel>切换账号</DropdownMenuLabel>
+                <DropdownMenuLabel>Switch account</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
                   value={activeAccountId ?? undefined}
                   onValueChange={(id) => {
@@ -117,7 +117,7 @@ export function User({ user }: { user: any }) {
                       <div className="flex w-full items-center justify-between gap-2">
                         <div className="flex min-w-0 flex-col">
                           <span className="truncate text-sm">
-                            {account.fullName || account.email || "未命名账号"}
+                            {account.fullName || account.email || "Unnamed account"}
                           </span>
                           {account.email && (
                             <span className="truncate text-xs text-muted-foreground">
@@ -139,7 +139,7 @@ export function User({ user }: { user: any }) {
               trigger={
                 <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
                   <UserPlus />
-                  添加账号
+                  Add account
                 </DropdownMenuItem>
               }
             />
