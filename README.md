@@ -106,7 +106,7 @@ The team also improved the user interface, documentation, deployment workflow, a
 
 - Save multiple Easy Tracker accounts
 - Switch between saved accounts without repeating the full logout and login process
-- Assign predefined tags such as `Work`, `Personal`, or `School`
+- Assign predefined tags such as `Work`, `Personal`, or `Company`
 - Create custom account tags
 - Assign a distinct color to each saved account
 - Clearly indicate the currently active account
