@@ -4,7 +4,7 @@ import { createUser } from "./utils/privateApi.ts"
 import { randomEmail, randomPassword } from "./utils/random"
 import { logInUser, logOutUser } from "./utils/user"
 
-const tabs = ["My profile", "Password", "Danger zone"]
+const tabs = ["My profile", "Accounts", "Password", "Danger zone"]
 
 test("My profile tab is active by default", async ({ page }) => {
   await page.goto("/settings")
@@ -19,6 +19,29 @@ test("All tabs are visible", async ({ page }) => {
   for (const tab of tabs) {
     await expect(page.getByRole("tab", { name: tab })).toBeVisible()
   }
+})
+
+test.describe("Accounts tab", () => {
+  test.use({ storageState: { cookies: [], origins: [] } })
+
+  test("Accounts tab shows current account and add account entry", async ({
+    page,
+  }) => {
+    const email = randomEmail()
+    const password = randomPassword()
+    await createUser({ email, password })
+    await logInUser(page, email, password)
+
+    await page.goto("/settings")
+    await page.getByRole("tab", { name: "Accounts" }).click()
+
+    await expect(
+      page.getByRole("heading", { name: "Account management" }),
+    ).toBeVisible()
+    await expect(page.getByRole("button", { name: "Add account" })).toBeVisible()
+    await expect(page.getByText(email)).toBeVisible()
+    await expect(page.getByText("Currently active")).toBeVisible()
+  })
 })
 
 test.describe("Edit user profile", () => {
