@@ -125,6 +125,7 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
         const isDragOver = dragOverStatus === status
 
         return (
+          // biome-ignore lint/a11y/noStaticElementInteractions: mouse-only drag-and-drop drop zone; no semantic element (fieldset/list) fits this interaction pattern, and the column's <h3> already labels it
           <div
             key={status}
             onDragOver={(e) => {

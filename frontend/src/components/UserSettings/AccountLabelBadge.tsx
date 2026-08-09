@@ -70,15 +70,16 @@ export function LabelEditorDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>编辑标签</DialogTitle>
+          <DialogTitle>Edit label</DialogTitle>
           <DialogDescription>
-            自定义这个账号在切换列表里显示的名称和颜色
+            Customize the name and color shown for this account in the switch
+            list
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="account-label-text">标签文字</Label>
+            <Label htmlFor="account-label-text">Label text</Label>
             <Input
               id="account-label-text"
               value={text}
@@ -88,7 +89,7 @@ export function LabelEditorDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label>预设颜色</Label>
+            <Label>Preset colors</Label>
             <div className="flex flex-wrap gap-2">
               {LABEL_COLOR_PRESETS.map((preset) => (
                 <button
@@ -109,7 +110,7 @@ export function LabelEditorDialog({
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="account-label-color">自定义颜色</Label>
+            <Label htmlFor="account-label-color">Custom color</Label>
             <div className="flex items-center gap-2">
               <input
                 id="account-label-color"
@@ -123,7 +124,7 @@ export function LabelEditorDialog({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">预览</span>
+            <span className="text-sm text-muted-foreground">Preview</span>
             <AccountLabelBadge
               label={{ text: text.trim() || label.text, color }}
             />
@@ -132,9 +133,9 @@ export function LabelEditorDialog({
 
         <DialogFooter className="mt-2">
           <DialogClose asChild>
-            <Button variant="outline">取消</Button>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button onClick={handleSave}>保存</Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
