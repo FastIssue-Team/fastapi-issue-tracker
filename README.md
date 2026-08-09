@@ -296,6 +296,8 @@ fastapi-issue-tracker/
 ├── compose.yml                 # Local/production service definitions
 ├── compose.override.yml        # Local development overrides (Traefik, hot reload)
 ├── deployment.md / development.md
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
 ├── .env.example                 # Documented environment variables
 ├── README.md
 └── LICENSE
@@ -339,6 +341,16 @@ Development services:
 | MailCatcher          | `http://localhost:1080`            |
 
 See [development.md](development.md) for the full local development guide, including running the backend and frontend outside Docker.
+
+### Contributor quick start
+
+1. Clone the repo and copy `.env.example` to `.env`.
+2. Start the stack with `docker compose watch`.
+3. Run backend tests with `cd backend && uv run pytest`.
+4. Run frontend end-to-end tests with `cd frontend && bun run test`.
+5. Read [development.md](development.md) for day-to-day workflow details.
+6. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for issue → branch → PR expectations.
+7. Review our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
 
 ### Backend only (without Docker)
 
@@ -471,7 +483,9 @@ Possible future additions include labels, attachments, notifications, project bo
 
 ## Contributing
 
-Contributions are welcome. Before submitting a change:
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and our [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a change.
+
+Before opening a pull request:
 
 1. Open or select an issue describing the work.
 2. Create a focused feature branch.
@@ -481,7 +495,7 @@ Contributions are welcome. Before submitting a change:
 6. For account-switching changes, verify that data from the previous account is cleared before loading the newly active account.
 7. Do not use color as the only way to identify an account or application state.
 
-Please keep architectural proposals and large feature additions in a discussion or issue before implementation so the team can agree on scope and design.
+Please keep architectural proposals and large feature additions in an issue before implementation so the team can agree on scope and design.
 
 ## Inspiration and References
 
