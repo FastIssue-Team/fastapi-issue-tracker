@@ -39,7 +39,8 @@ test.describe("Accounts tab", () => {
       page.getByRole("heading", { name: "Account management" }),
     ).toBeVisible()
     await expect(page.getByRole("button", { name: "Add account" })).toBeVisible()
-    await expect(page.getByText(email)).toBeVisible()
+    // Scope to the Accounts panel — the same email also appears in the sidebar.
+    await expect(page.getByLabel("Accounts").getByText(email)).toBeVisible()
     await expect(page.getByText("Currently active")).toBeVisible()
   })
 })
