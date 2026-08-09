@@ -473,15 +473,16 @@ bash scripts/prestart.sh && fastapi run --workers 4
 - Clearly indicate the active account
 - Reload account-specific issue and calendar data after switching
 
-### Phase 6 — Quality and future improvements
+### Phase 6 — Future directions
 
-- Expand accessibility and responsive-behavior coverage
-- Improve search and sorting for the issue list
-- Add pagination controls to the UI
-- Expand automated test coverage
-- Improve documentation and demonstration materials
+Possible next steps after the current release:
 
-Possible future additions include labels, attachments, notifications, project boards, audit logs, and third-party integrations. They are not part of the current release unless added to the roadmap above.
+- Issue labels, attachments, and notifications
+- Richer search, sorting, and pagination in the issue list
+- Broader accessibility and responsive-behavior coverage
+- Optional project boards and third-party integrations
+
+These items are backlog ideas only and are not part of the current release.
 
 ## Contributing
 
