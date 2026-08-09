@@ -106,7 +106,7 @@ The team also improved the user interface, documentation, deployment workflow, a
 
 - Save multiple Easy Tracker accounts
 - Switch between saved accounts without repeating the full logout and login process
-- Assign predefined tags such as `Work`, `Personal`, or `School`
+- Assign predefined tags such as `Work`, `Personal`, or `Company`
 - Create custom account tags
 - Assign a distinct color to each saved account
 - Clearly indicate the currently active account
@@ -344,6 +344,8 @@ See [development.md](development.md) for the full local development guide, inclu
 
 ### Contributor quick start
 
+New contributors can get running with the steps below. For the full local workflow (Docker alternatives, linting, pre-commit, and API client generation), use [development.md](development.md) as the main onboarding guide.
+
 1. Clone the repo and copy `.env.example` to `.env`.
 2. Start the stack with `docker compose watch`.
 3. Run backend tests with `cd backend && uv run pytest`.
@@ -471,15 +473,16 @@ bash scripts/prestart.sh && fastapi run --workers 4
 - Clearly indicate the active account
 - Reload account-specific issue and calendar data after switching
 
-### Phase 6 — Quality and future improvements
+### Phase 6 — Future directions
 
-- Expand accessibility and responsive-behavior coverage
-- Improve search and sorting for the issue list
-- Add pagination controls to the UI
-- Expand automated test coverage
-- Improve documentation and demonstration materials
+Possible next steps after the current release:
 
-Possible future additions include labels, attachments, notifications, project boards, audit logs, and third-party integrations. They are not part of the current release unless added to the roadmap above.
+- Issue labels, attachments, and notifications
+- Richer search, sorting, and pagination in the issue list
+- Broader accessibility and responsive-behavior coverage
+- Optional project boards and third-party integrations
+
+These items are backlog ideas only and are not part of the current release.
 
 ## Contributing
 
