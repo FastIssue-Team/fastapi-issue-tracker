@@ -24,7 +24,7 @@ By participating, you agree to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 4. Open the app at `http://localhost:5173` and the API docs at `http://localhost:8000/docs`.
 
-For more detail (running backend or frontend outside Docker, linting, pre-commit, and client generation), see [development.md](development.md).
+For more detail (running backend or frontend outside Docker, linting, pre-commit, and client generation), see [development.md](development.md). That guide is the full onboarding reference; this document covers contribution expectations and the short setup path above.
 
 ## Running tests
 

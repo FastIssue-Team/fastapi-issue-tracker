@@ -344,6 +344,8 @@ See [development.md](development.md) for the full local development guide, inclu
 
 ### Contributor quick start
 
+New contributors can get running with the steps below. For the full local workflow (Docker alternatives, linting, pre-commit, and API client generation), use [development.md](development.md) as the main onboarding guide.
+
 1. Clone the repo and copy `.env.example` to `.env`.
 2. Start the stack with `docker compose watch`.
 3. Run backend tests with `cd backend && uv run pytest`.
