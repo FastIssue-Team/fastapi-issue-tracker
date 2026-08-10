@@ -5,7 +5,6 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import col, func, select
 
 from app.api.deps import CurrentUser, SessionDep
@@ -28,7 +27,6 @@ from app.models import (
     IssueStatus,
     IssueUpdate,
     Message,
-    User,
     get_datetime_utc,
 )
 
@@ -43,12 +41,12 @@ def _issue_to_public(issue: Issue) -> IssuePublic:
     )
 
 
-def _visible_issues_condition(current_user: User) -> ColumnElement[bool]:
+def _visible_issues_condition(current_user):
     shared_issue_ids = select(IssueShare.issue_id).where(
         IssueShare.user_id == current_user.id
     )
     return or_(
-        col(Issue.owner_id) == current_user.id,
+        Issue.owner_id == current_user.id,
         col(Issue.id).in_(shared_issue_ids),
     )
 
@@ -67,13 +65,13 @@ def read_issues(
     Retrieve issues owned by, or shared with, the current user.
     Superusers see all issues.
     """
-    filters: list[ColumnElement[bool]] = []
+    filters = []
     if status is not None:
-        filters.append(col(Issue.status) == status)
+        filters.append(Issue.status == status)
     if priority is not None:
-        filters.append(col(Issue.priority) == priority)
+        filters.append(Issue.priority == priority)
     if assignee_id is not None:
-        filters.append(col(Issue.assignee_id) == assignee_id)
+        filters.append(Issue.assignee_id == assignee_id)
 
     if not current_user.is_superuser:
         filters.append(_visible_issues_condition(current_user))
@@ -111,9 +109,9 @@ def read_calendar_issues(
         )
 
     filters = [
-        col(Issue.due_date).is_not(None),
-        col(Issue.due_date) >= start,
-        col(Issue.due_date) <= end,
+        Issue.due_date.is_not(None),
+        Issue.due_date >= start,
+        Issue.due_date <= end,
     ]
 
     if not current_user.is_superuser:

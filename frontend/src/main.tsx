@@ -20,7 +20,7 @@ OpenAPI.TOKEN = async () => {
 }
 
 const handleApiError = (error: Error) => {
-  if (error instanceof ApiError && error.status === 401) {
+  if (error instanceof ApiError && [401, 403].includes(error.status)) {
     // The active account's token is invalid/expired: drop it and fall back
     // to another stored account if one exists, otherwise go to /login. The
     // full page navigation below already discards the in-memory query cache.
