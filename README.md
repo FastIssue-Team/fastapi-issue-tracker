@@ -7,6 +7,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Live Demo](https://img.shields.io/badge/demo-live-blueviolet?logo=railway&logoColor=white)](https://frontend-production-3125.up.railway.app)
+[![Final Project Report](https://img.shields.io/badge/report-Google%20Docs-4285F4?logo=googledocs&logoColor=white)](https://docs.google.com/document/d/1apfEA39rUdMpjWuK29NpHDlBwPe95xWJNRTwQLSfGGI/edit)
 
 Easy Tracker is an open-source issue-tracking application built with FastAPI, React, PostgreSQL, and Docker.
 
