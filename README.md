@@ -7,6 +7,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Live Demo](https://img.shields.io/badge/demo-live-blueviolet?logo=railway&logoColor=white)](https://frontend-production-3125.up.railway.app)
+[![Final Project Report](https://img.shields.io/badge/report-Google%20Docs-4285F4?logo=googledocs&logoColor=white)](https://docs.google.com/document/d/1apfEA39rUdMpjWuK29NpHDlBwPe95xWJNRTwQLSfGGI/edit)
 
 Easy Tracker is an open-source issue-tracking application built with FastAPI, React, PostgreSQL, and Docker.
 
@@ -71,6 +72,40 @@ Issues can now include optional due dates and appear on a dashboard calendar on 
 Users can save and quickly switch between multiple Easy Tracker accounts without repeatedly completing the full logout and login workflow. Saved accounts can be labeled with predefined or custom tags and assigned distinct colors for easier identification.
 
 The team also improved the user interface, documentation, deployment workflow, automated testing, and open-source attribution.
+
+## Demo
+
+The annotated screenshots below highlight the main workflows and user-facing additions delivered by the FastIssue Team. Select any image to view it at full resolution.
+
+### Dashboard overview
+
+The dashboard summarizes issue status and surfaces due-soon, assigned, and recently updated work.
+
+[![Annotated Easy Tracker dashboard with issue summary cards and task highlights](docs/images/demo/dashboard-overview.png)](docs/images/demo/dashboard-overview.png)
+
+### Issue management
+
+The issue list supports filtering, list and board views, quick issue creation, and due-date visibility.
+
+[![Annotated Easy Tracker issue list with filters, view controls, and due dates](docs/images/demo/issue-management.png)](docs/images/demo/issue-management.png)
+
+### Issue creation
+
+The creation dialog captures the title, description, priority, optional due date, and assignee in one workflow.
+
+[![Annotated Easy Tracker add-issue dialog with priority, due-date, and assignee fields](docs/images/demo/add-issue-dialog.png)](docs/images/demo/add-issue-dialog.png)
+
+### Due-date calendar
+
+The calendar groups visible issues by deadline and provides month-based navigation.
+
+[![Annotated Easy Tracker calendar showing deadline-based issue tracking](docs/images/demo/due-date-calendar.png)](docs/images/demo/due-date-calendar.png)
+
+### Account access
+
+The account menu provides access to saved-account switching, account setup, user settings, and session controls.
+
+[![Annotated Easy Tracker account menu with account, settings, and logout actions](docs/images/demo/account-access-menu.png)](docs/images/demo/account-access-menu.png)
 
 ## Features
 
