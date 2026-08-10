@@ -1,9 +1,9 @@
 import uuid
 from datetime import UTC, date, datetime
-from enum import StrEnum
+from enum import Enum
 
 from pydantic import EmailStr
-from sqlalchemy import Column, DateTime, String, UniqueConstraint
+from sqlalchemy import DateTime, String, UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -57,16 +57,16 @@ class User(UserBase, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
-    issues: list[Issue] = Relationship(
+    issues: list["Issue"] = Relationship(
         back_populates="owner",
         cascade_delete=True,
         sa_relationship_kwargs={"foreign_keys": "Issue.owner_id"},
     )
-    assigned_issues: list[Issue] = Relationship(
+    assigned_issues: list["Issue"] = Relationship(
         back_populates="assignee",
         sa_relationship_kwargs={"foreign_keys": "Issue.assignee_id"},
     )
-    issue_shares: list[IssueShare] = Relationship(
+    issue_shares: list["IssueShare"] = Relationship(
         back_populates="user", cascade_delete=True
     )
 
@@ -82,7 +82,7 @@ class UsersPublic(SQLModel):
     count: int
 
 
-class IssueStatus(StrEnum):
+class IssueStatus(str, Enum):
     OPEN = "Open"
     IN_PROGRESS = "In Progress"
     DONE = "Done"
@@ -94,9 +94,7 @@ class IssueBase(SQLModel):
     description: str | None = Field(default=None, max_length=2000)
     # Stored as a plain varchar (not a native Postgres enum) to keep schema
     # changes to the allowed values a simple app-level concern.
-    status: IssueStatus = Field(
-        default=IssueStatus.OPEN, sa_column=Column(String(20), nullable=False)
-    )
+    status: IssueStatus = Field(default=IssueStatus.OPEN, sa_type=String(20))
     priority: int = Field(default=3, ge=1, le=5)
     due_date: date | None = None
 
@@ -142,8 +140,12 @@ class Issue(IssueBase, table=True):
         back_populates="assigned_issues",
         sa_relationship_kwargs={"foreign_keys": "Issue.assignee_id"},
     )
-    comments: list[Comment] = Relationship(back_populates="issue", cascade_delete=True)
-    shares: list[IssueShare] = Relationship(back_populates="issue", cascade_delete=True)
+    comments: list["Comment"] = Relationship(
+        back_populates="issue", cascade_delete=True
+    )
+    shares: list["IssueShare"] = Relationship(
+        back_populates="issue", cascade_delete=True
+    )
 
 
 # Properties to return via API, id is always required
